@@ -1,0 +1,400 @@
+import { test, expect, chromium } from '@playwright/test';
+
+//expected topLeft values in the different cs, at the different
+//positions the map goes in
+let expectedPCRS = [
+  { horizontal: -9373489.01871137, vertical: 11303798.154262971 },
+  { horizontal: -5059449.140631609, vertical: 10388337.990009308 }
+];
+let expectedGCRS = [
+  { horizontal: -128.07848522325827, vertical: -3.3883427348651636 },
+  { horizontal: -131.75138842058425, vertical: 18.07246131233218 }
+];
+let expectedFirstTileMatrix = [
+  { horizontal: 2.57421875, vertical: 2.8515625 },
+  { horizontal: 3.0134698275862073, vertical: 2.944773706896552 }
+];
+let expectedFirstTCRS = [
+  { horizontal: 659, vertical: 730 },
+  { horizontal: 771.4482758620691, vertical: 753.8620689655173 }
+];
+
+let controls = [
+  'leaflet-control-zoom leaflet-bar leaflet-control',
+  'mapml-reload-button leaflet-bar leaflet-control',
+  'leaflet-control-fullscreen leaflet-bar leaflet-control'
+];
+let options = ['nozoom', 'noreload', 'nofullscreen'];
+
+test.describe('Playwright mapml-viewer Element Tests', () => {
+  let page;
+  let context;
+  test.beforeAll(async () => {
+    context = await chromium.launchPersistentContext('');
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    page =
+      context.pages().find((page) => page.url() === 'about:blank') ||
+      (await context.newPage());
+    page = await context.newPage();
+    await page.goto('mapml-viewer.html');
+  });
+
+  test.afterAll(async function () {
+    await context.close();
+  });
+
+  test("Ensure attribution control has role='group' aria-label='Map data attribution'", async () => {
+    let role = await page.evaluate(
+      `document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('role')`
+    );
+    expect(role).toEqual('group');
+    let arialabel = await page.evaluate(
+      `document.querySelector('mapml-viewer')._map.attributionControl._container.getAttribute('aria-label')`
+    );
+    expect(arialabel).toEqual('Map data attribution');
+  });
+
+  test('Ensure attribution summary has a localized title tooltip', async () => {
+    let title = await page.evaluate(
+      `document.querySelector('mapml-viewer')._map.attributionControl._container.querySelector('summary').getAttribute('title')`
+    );
+    expect(title).toEqual('Map data attribution');
+    let arialabel = await page.evaluate(
+      `document.querySelector('mapml-viewer')._map.attributionControl._container.querySelector('summary').getAttribute('aria-label')`
+    );
+    expect(arialabel).toEqual('Map data attribution');
+  });
+
+  test('Initial map element extent', async () => {
+    await page.waitForTimeout(500);
+    const extent = await page.$eval('body > mapml-viewer', (map) => map.extent);
+
+    expect(extent.projection).toEqual('CBMTILE');
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[0]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[0]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[0]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[0]);
+  });
+  test("Panned and zoomed initial map's extent", async () => {
+    await page.$eval('body > mapml-viewer', (map) => map.zoomTo(81, -63, 1));
+    await page.waitForTimeout(1000);
+    const extent = await page.$eval('body > mapml-viewer', (map) => map.extent);
+
+    expect(extent.zoom).toEqual({ minZoom: 0, maxZoom: 25 });
+    expect(extent.topLeft.pcrs).toEqual(expectedPCRS[1]);
+    expect(extent.topLeft.gcrs).toEqual(expectedGCRS[1]);
+    expect(extent.topLeft.tilematrix[0]).toEqual(expectedFirstTileMatrix[1]);
+    expect(extent.topLeft.tcrs[0]).toEqual(expectedFirstTCRS[1]);
+  });
+
+  test('zoomToExtent fits the map to the given bounds', async () => {
+    // zoom to a known bbox (west, south, east, north) and verify the map
+    // center and zoom update accordingly
+    await page.$eval('body > mapml-viewer', (map) =>
+      map.zoomToExtent(-80, 43, -70, 48)
+    );
+    await page.waitForTimeout(500);
+    const result = await page.$eval('body > mapml-viewer', (map) => ({
+      lat: map.lat,
+      lon: map.lon,
+      zoom: map.zoom
+    }));
+    // center should be approximately (45.5, -75) — the midpoint of the bbox
+    expect(result.lat).toBeCloseTo(45.5, 0);
+    expect(result.lon).toBeCloseTo(-75, 0);
+    // zoom should have increased from the previous zoom level
+    expect(result.zoom).toBeGreaterThan(1);
+  });
+
+  test.describe('Attributes Tests', () => {
+    for (let i in controls) {
+      test.describe('Controls List ' + options[i] + ' Attribute Tests', () => {
+        test(options[i] + ' removes controls', async () => {
+          await page.$eval(
+            'body > mapml-viewer',
+            (layer, context) =>
+              layer.setAttribute('controlslist', context.options[context.i]),
+            { options: options, i: i }
+          );
+
+          let children = await page.$eval(
+              'div > div.leaflet-control-container > div.leaflet-top.leaflet-left',
+              (div) => div.children
+            ),
+            found = false;
+          for (let [key, value] of Object.entries(children)) {
+            if (value.className === controls[i]) found = true;
+          }
+          expect(found).toEqual(false);
+        });
+        test("Toggle controls, controls aren't re-enabled", async () => {
+          await page.click('body > mapml-viewer', { button: 'right' });
+          await page.click('div > div.mapml-contextmenu > button:nth-child(6)');
+          await page.click('body > mapml-viewer', { button: 'right' });
+          await page.click('div > div.mapml-contextmenu > button:nth-child(6)');
+
+          let children = await page.$eval(
+              'div > div.leaflet-control-container > div.leaflet-top.leaflet-left',
+              (div) => div.children
+            ),
+            found = false;
+          for (let [key, value] of Object.entries(children)) {
+            if (value.className === controls[i]) found = true;
+          }
+          expect(found).toEqual(false);
+        });
+      });
+    }
+    test.describe('Controls List nolayer Attribute Tests', () => {
+      test('controlslist=nolayer removes layer control', async () => {
+        await page.$eval('body > mapml-viewer', (layer) =>
+          layer.setAttribute('controlslist', 'nolayer')
+        );
+        let layerControl = await page.locator('.leaflet-control-layers');
+        await expect(layerControl).toBeHidden();
+
+        await page.click('body > mapml-viewer', { button: 'right' });
+        // toggle controls
+        await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+        await page.click('body > mapml-viewer', { button: 'right' });
+        // toggle controls
+        await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+
+        await expect(layerControl).toBeHidden();
+      });
+    });
+    test.describe('Controls List search Attribute Tests', () => {
+      test('controlslist=search shows search control', async () => {
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.setAttribute('controlslist', 'search')
+        );
+        let searchControl = await page.locator('.mapml-search-control');
+        await expect(searchControl).toBeVisible();
+      });
+      test('search control hidden when controlslist does not contain search', async () => {
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.setAttribute('controlslist', 'noreload')
+        );
+        let searchControl = await page.locator('.mapml-search-control');
+        await expect(searchControl).toBeHidden();
+      });
+      test('search control persists after toggling controls', async () => {
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.setAttribute('controlslist', 'search')
+        );
+        // toggle controls off
+        await page.click('body > mapml-viewer', { button: 'right' });
+        await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+        // toggle controls on
+        await page.click('body > mapml-viewer', { button: 'right' });
+        await page.click('.mapml-contextmenu > button:nth-of-type(6)');
+
+        let searchControl = await page.locator('.mapml-search-control');
+        await expect(searchControl).toBeVisible();
+      });
+      test('controlsList property reflects search token', async () => {
+        let contains = await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.controlsList.contains('search')
+        );
+        expect(contains).toEqual(true);
+
+        // clean up
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.removeAttribute('controlslist')
+        );
+      });
+      test('search control inserted between zoom and reload when controlslist="search" is added at runtime', async () => {
+        // Regression test: previously the search button was created
+        // lazily when controlslist="search" was observed, which meant
+        // Leaflet's Control.addTo() appended its container at the END of
+        // the topleft control corner (after fullscreen) instead of in
+        // its correct slot between zoom and reload. The fix creates the
+        // search button up-front in _createControls() and merely toggles
+        // its visibility via controlslist, mirroring the reload control
+        // pattern.
+
+        // Make sure we start without controlslist.
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.removeAttribute('controlslist')
+        );
+        await page.waitForTimeout(200);
+
+        // Add controlslist="search" at runtime.
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.setAttribute('controlslist', 'search')
+        );
+        await page.waitForTimeout(200);
+
+        // Read the DOM order of the topleft control corner and find the
+        // indexes of zoom, search and reload. The search button must
+        // appear AFTER zoom and BEFORE reload.
+        const order = await page.$eval('body > mapml-viewer', (viewer) => {
+          const corner = viewer.shadowRoot.querySelector(
+            '.leaflet-control-container > .leaflet-top.leaflet-left'
+          );
+          if (!corner) return [];
+          const result = [];
+          for (let i = 0; i < corner.children.length; i++) {
+            result.push(corner.children[i].className);
+          }
+          return result;
+        });
+
+        const zoomIndex = order.findIndex((cn) =>
+          cn.includes('leaflet-control-zoom')
+        );
+        const searchIndex = order.findIndex((cn) =>
+          cn.includes('mapml-search-control')
+        );
+        const reloadIndex = order.findIndex((cn) =>
+          cn.includes('mapml-reload-button')
+        );
+
+        expect(zoomIndex).toBeGreaterThanOrEqual(0);
+        expect(searchIndex).toBeGreaterThanOrEqual(0);
+        expect(reloadIndex).toBeGreaterThanOrEqual(0);
+
+        expect(searchIndex).toBeGreaterThan(zoomIndex);
+        expect(searchIndex).toBeLessThan(reloadIndex);
+
+        // clean up
+        await page.$eval('body > mapml-viewer', (viewer) =>
+          viewer.removeAttribute('controlslist')
+        );
+      });
+    });
+  });
+  test('Paste geojson Layer to map using ctrl+v', async () => {
+    await page.click('body > textarea#copyGeoJSON');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(2);
+  });
+
+  test('Paste Link to map using ctrl+v', async () => {
+    await page.click('body > textarea#copyLink');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(3);
+  });
+
+  test('Paste Invalid text to map using ctrl+v', async () => {
+    await page.click('body > textarea#invalidText');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(3);
+  });
+
+  test('Paste Invalid link to map using ctrl+v', async () => {
+    await page.click('body > textarea#invalidLink');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    await page.waitForTimeout(1000);
+    expect(layerCount).toEqual(3);
+  });
+
+  test('Paste links with GeoJSON content-type to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkGeoJSONContentType');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(4);
+  });
+
+  test('Paste links with JSON content-type to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkJSONContentType');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(5);
+  });
+
+  test('Paste links with GeoJSON extension to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkGeoJSONExt');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(6);
+  });
+
+  test('Paste links with JSON extension to map using ctrl+v', async () => {
+    await page.click('body > textarea#linkJSONExt');
+    await page.keyboard.press('Control+a');
+    await page.keyboard.press('Control+c');
+
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Control+v');
+    await page.waitForTimeout(1000);
+    const layerCount = await page.$eval(
+      'body > mapml-viewer',
+      (map) => map.layers.length
+    );
+    expect(layerCount).toEqual(7);
+  });
+
+  test('Press spacebar when focus is on map', async () => {
+    // scroll to the top
+    await page.mouse.wheel(0, -1000);
+    await page.waitForTimeout(300);
+    await page.click('body > mapml-viewer');
+    await page.keyboard.press('Space');
+    await page.waitForTimeout(300);
+    const currPos = await page.$eval(
+      'body > mapml-viewer',
+      () => window.pageYOffset
+    );
+    expect(currPos).toEqual(0);
+  });
+});
