@@ -17,7 +17,7 @@ test.describe('matchMedia map-zoom tests', () => {
   });
 
   test('matchMedia API detects changes in zoom', async () => {
-    const zoomIn = await page.locator('.leaflet-control-zoom-in');
+    const zoomIn = await page.locator('[data-testid="zoom-in-button"]');
     const zoomIndicator = await page.waitForSelector('#zoom-indicator');
 
     for (let n = 1; n < 18; n++) {

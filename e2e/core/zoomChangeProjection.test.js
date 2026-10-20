@@ -32,7 +32,7 @@ test.describe.skip('Playwright zoomin zoomout Projection Change Tests', () => {
 
   test('zoomin link changes projections', async () => {
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-in'
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a[data-testid="zoom-in-button"]'
     );
     await page.waitForTimeout(1000);
     const newProjection = await page.$eval(
@@ -49,7 +49,7 @@ test.describe.skip('Playwright zoomin zoomout Projection Change Tests', () => {
 
   test('zoomout link changes projections', async () => {
     await page.click(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a.leaflet-control-zoom-out'
+      'div > div.leaflet-control-container > div.leaflet-top.leaflet-left > div.leaflet-control-zoom.leaflet-bar.leaflet-control > a[data-testid="zoom-out-button"]'
     );
     await page.waitForTimeout(1000);
     const newProjection = await page.$eval(

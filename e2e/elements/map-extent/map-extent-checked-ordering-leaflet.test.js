@@ -26,7 +26,7 @@ The imagery layer <map-extent> should draw underneath the states layer.
 What actually happens:
 The imagery layer <map-extent> draws on top of the states layer.
      * */
-    const layerControl = page.locator('.leaflet-top.leaflet-right');
+    const layerControl = page.locator('[data-testid="layer-control"]');
     await layerControl.hover();
     const layerSettings = layerControl.getByTitle('Layer Settings', {
       exact: true

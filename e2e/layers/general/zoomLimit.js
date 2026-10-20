@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-exports.test = (path, zoomIn, zoomOut) => {
+const runTests = (path, zoomIn, zoomOut) => {
   test.describe(`Map Zoom Limit Tests for ${path.split('.')[0]}`, () => {
     let page;
     let context;
@@ -16,11 +16,11 @@ exports.test = (path, zoomIn, zoomOut) => {
 
     test('Limit map zooming (zooming in)', async () => {
       for (let i = 0; i < zoomIn; i++) {
-        await page.click('.leaflet-control-zoom-in');
+        await page.click('[data-testid="zoom-in-button"]');
         await page.waitForTimeout(500);
       }
       const zoomButton = await page.$eval(
-        '.leaflet-control-zoom-in',
+        '[data-testid="zoom-in-button"]',
         (controller) => controller.className
       );
 
@@ -28,10 +28,10 @@ exports.test = (path, zoomIn, zoomOut) => {
     });
 
     test('Allow zooming before reaching limit (zooming in)', async () => {
-      await page.click('.leaflet-control-zoom-out');
+      await page.click('[data-testid="zoom-out-button"]');
       await page.waitForTimeout(300);
       const zoomButton = await page.$eval(
-        '.leaflet-control-zoom-in',
+        '[data-testid="zoom-in-button"]',
         (controller) => controller.className
       );
 
@@ -40,11 +40,11 @@ exports.test = (path, zoomIn, zoomOut) => {
 
     test('Limit map zooming (zooming out)', async () => {
       for (let i = 0; i < zoomOut + zoomIn - 2; i++) {
-        await page.click('.leaflet-control-zoom-out');
+        await page.click('[data-testid="zoom-out-button"]');
         await page.waitForTimeout(500);
       }
       const zoomButton = await page.$eval(
-        '.leaflet-control-zoom-out',
+        '[data-testid="zoom-out-button"]',
         (controller) => controller.className
       );
 
@@ -52,10 +52,10 @@ exports.test = (path, zoomIn, zoomOut) => {
     });
 
     test('Allow zooming before reaching limit (zooming out)', async () => {
-      await page.click('.leaflet-control-zoom-in');
+      await page.click('[data-testid="zoom-in-button"]');
       await page.waitForTimeout(300);
       const zoomButton = await page.$eval(
-        '.leaflet-control-zoom-out',
+        '[data-testid="zoom-out-button"]',
         (controller) => controller.className
       );
 
@@ -63,3 +63,7 @@ exports.test = (path, zoomIn, zoomOut) => {
     });
   });
 };
+
+// `test` is already bound to the Playwright import, so the suite factory is
+// exported as a property, keeping call sites (`helper.test(...)`) unchanged.
+export default { test: runTests };

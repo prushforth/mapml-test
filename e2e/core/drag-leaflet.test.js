@@ -21,21 +21,21 @@ test.describe('UI Drag&Drop Test', () => {
     const dataTransfer = await page.evaluateHandle(() =>
       new DataTransfer().setData('text/uri-list', 'http://example.com')
     );
-    await page.dispatchEvent('.leaflet-control-zoom-in', 'dragstart', {
+    await page.dispatchEvent('[data-testid="zoom-in-button"]', 'dragstart', {
       dataTransfer
     });
 
     await page.dispatchEvent('map', 'drop', {
       dataTransfer
     });
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(3);
   });
 
   test('Drag and drop of layers', async () => {
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(1)'
     );
@@ -48,14 +48,14 @@ test.describe('UI Drag&Drop Test', () => {
     await page.mouse.move(50, 50);
     await page.mouse.up();
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(3);
   });
 
   test('Moving layer down one in control overlay', async () => {
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(1)'
     );
@@ -70,7 +70,7 @@ test.describe('UI Drag&Drop Test', () => {
       controlBBox.y + controlBBox.height / 2 + 48
     );
     await page.mouse.up();
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     await page.waitForTimeout(500);
 
     const controlText = await page.$eval(
@@ -93,7 +93,7 @@ test.describe('UI Drag&Drop Test', () => {
 
   test('Moving layer up one in control overlay', async () => {
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let control = await page.$(
       '.leaflet-control-layers-overlays > fieldset:nth-child(2)'
     );
@@ -109,7 +109,7 @@ test.describe('UI Drag&Drop Test', () => {
     );
     await page.mouse.up();
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
 
     const controlText = await page.$eval(
       '.leaflet-control-layers-overlays > fieldset:nth-child(1) > div:nth-child(1) > label > span',
@@ -130,7 +130,7 @@ test.describe('UI Drag&Drop Test', () => {
   });
   test('Re-order checked bug (#955) test', async () => {
     await page.waitForTimeout(500);
-    const layerControl = page.locator('.leaflet-top.leaflet-right');
+    const layerControl = page.locator('[data-testid="layer-control"]');
     await layerControl.hover();
     const overlaysList = page.locator('.leaflet-control-layers-overlays');
     const startingLowestLayer = overlaysList

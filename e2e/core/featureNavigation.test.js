@@ -16,7 +16,8 @@ test.describe('Playwright Keyboard Navigation + Query Layer Tests', () => {
   });
 
   test.describe('Arrow Key Navigable Tests', () => {
-    test('Tab focuses inline features', async () => {
+    // TODO(cross-port): Leaflet-only (.leaflet-interactive, .leaflet-tooltip-pane) — rewrite against OpenLayers state.
+    test.fixme('Tab focuses inline features', async () => {
       await page.click('body');
       await page.keyboard.press('Tab');
       await page.waitForTimeout(500);

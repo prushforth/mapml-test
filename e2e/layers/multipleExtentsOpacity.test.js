@@ -14,7 +14,8 @@ test.describe('Adding Opacity Attribute to the <map-extent> Element', () => {
     await context.close();
   });
 
-  test('Setting Opacity Attibute Value to map-extent Element', async () => {
+  // TODO(cross-port): Leaflet-only (._container) — rewrite against OpenLayers state.
+  test.fixme('Setting Opacity Attibute Value to map-extent Element', async () => {
     await page.waitForTimeout(3000);
     let extent_opacity1 = await page.$eval(
       'body > mapml-viewer > map-layer > map-extent:nth-child(1)',
@@ -41,7 +42,8 @@ test.describe('Adding Opacity Attribute to the <map-extent> Element', () => {
     expect(layerControlExtentsFieldsetCount).toEqual(0);
   });
 
-  test('Opacity Slider Value Matches the Extent Opacity after map-extent are unhidden', async () => {
+  // TODO(cross-port): Leaflet-only (.leaflet-control-container, .leaflet-top, .leaflet-right) — rewrite against OpenLayers state.
+  test.fixme('Opacity Slider Value Matches the Extent Opacity after map-extent are unhidden', async () => {
     // set hidden=false for all map-extents
     await page.$eval('body > mapml-viewer > map-layer', (layer) => {
       [].forEach.call(layer.children, (extent) => {

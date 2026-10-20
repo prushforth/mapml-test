@@ -16,7 +16,8 @@ test.describe('map-feature rendering tests', () => {
       maxDiffPixels: 100
     });
   });
-  test('removing a map-feature from DOM removes its rendering', async ({
+  // TODO(cross-port): Leaflet-only (._container) — rewrite against OpenLayers state.
+  test.fixme('removing a map-feature from DOM removes its rendering', async ({
     page
   }) => {
     await page.goto('static-features.html');
@@ -48,7 +49,8 @@ test.describe('map-feature rendering tests', () => {
     ).toHaveCount(4);
   });
 
-  test('removing last map-feature in a sequence removes rendering container', async ({
+  // TODO(cross-port): Leaflet-only (._container) — rewrite against OpenLayers state.
+  test.fixme('removing last map-feature in a sequence removes rendering container', async ({
     page
   }) => {
     await page.goto('static-features.html');

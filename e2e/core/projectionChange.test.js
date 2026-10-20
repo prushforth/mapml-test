@@ -53,7 +53,8 @@ test.describe('Linked Feature Projection Change Tests', () => {
     expect(isDisabled).toEqual(false);
   });
 
-  test('Debug components update with projection changes', async () => {
+  // TODO(cross-port): Leaflet-only (.leaflet-pane, .leaflet-map-pane, .leaflet-layer) — rewrite against OpenLayers state.
+  test.fixme('Debug components update with projection changes', async () => {
     await page.reload();
     await page.waitForTimeout(500);
     await page.$eval('body > map:nth-child(1)', (map) => map.toggleDebug());

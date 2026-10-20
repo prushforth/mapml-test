@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-exports.test = (path, expectedPCRS, expectedGCRS) => {
+const runTests = (path, expectedPCRS, expectedGCRS) => {
   test.describe(`<Layer>.extent Property Tests for ${
     path.split('.')[0]
   }`, () => {
@@ -44,3 +44,7 @@ exports.test = (path, expectedPCRS, expectedGCRS) => {
     });
   });
 };
+
+// `test` is already bound to the Playwright import, so the suite factory is
+// exported as a property, keeping call sites (`helper.test(...)`) unchanged.
+export default { test: runTests };

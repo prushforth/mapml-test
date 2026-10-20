@@ -23,7 +23,7 @@ test.describe('Playwright touch device tests', () => {
   test('Tap/Long press to show layer control', async () => {
     // possibly useful for debugging CI problems
     // const isCI = process.env.CI === 'true'; // GitHub Actions sets CI=true
-    const layerControl = await page.locator('.leaflet-control-layers');
+    const layerControl = await page.locator('[data-testid="layer-control"]');
     await layerControl.tap();
     // does not pass on linux
     //  await expect(layerControl).toHaveClass(/leaflet-control-layers-expanded/);
@@ -71,7 +71,7 @@ test.describe('Playwright touch device tests', () => {
   test('tap-expand does not ghost-click the settings button across cycles', async () => {
     await page.goto('layerContextMenu.html', { waitUntil: 'networkidle' });
 
-    const layerControl = page.locator('.leaflet-control-layers');
+    const layerControl = page.locator('[data-testid="layer-control"]');
     const settingsBtn = page
       .locator('fieldset.mapml-layer-item .mapml-layer-item-settings-control')
       .first();

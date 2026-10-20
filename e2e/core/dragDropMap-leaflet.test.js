@@ -28,7 +28,7 @@ test.describe('Drag and Drop Layers (map-layer, GeoJSON, Link) to web-map', () =
     });
     await page.dispatchEvent('map', 'drop', { dataTransfer });
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(2);
   });
@@ -44,7 +44,7 @@ test.describe('Drag and Drop Layers (map-layer, GeoJSON, Link) to web-map', () =
     });
     await page.dispatchEvent('map', 'drop', { dataTransfer });
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(3);
   });
@@ -60,7 +60,7 @@ test.describe('Drag and Drop Layers (map-layer, GeoJSON, Link) to web-map', () =
     });
     await page.dispatchEvent('map', 'drop', { dataTransfer });
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(4);
   });
@@ -73,7 +73,7 @@ test.describe('Drag and Drop Layers (map-layer, GeoJSON, Link) to web-map', () =
     });
     await page.dispatchEvent('map', 'drop', { dataTransfer });
     await page.waitForTimeout(500);
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     let vars = await page.$$('.leaflet-control-layers-overlays > fieldset');
     expect(vars.length).toBe(4);
   });

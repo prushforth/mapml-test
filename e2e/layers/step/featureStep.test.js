@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-const request = require('./request');
+import request from './request.js';
 
 test.describe('Templated features layer with step', () => {
   request.test(

@@ -49,7 +49,7 @@ test.describe('Map-change event are only fired when layers/extents are checked o
     expect(layerClicked).toBe(0);
 
     // check and uncheck layers in the layer menu should call map-change
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     const button = await page.locator('.leaflet-control-layers-selector');
     await button.click();
     await button.click();
@@ -103,7 +103,7 @@ test.describe('Map-change event are only fired when layers/extents are checked o
     const layerSettings = await page.locator(
       '.mapml-layer-item-settings-control'
     );
-    await page.hover('.leaflet-top.leaflet-right');
+    await page.hover('[data-testid="layer-control"]');
     await layerSettings.first().click();
     const extentControls = await page.locator('.mapml-layer-extent');
     const button = await extentControls.locator('.mapml-layer-item-toggle');

@@ -147,7 +147,7 @@ test.describe('<mapml-viewer> localization tests', () => {
       // select the current map and layer menu
       const map = await page.getByTestId(language);
       const layerMenu = await map.locator(
-        '.leaflet-control-layers.leaflet-control'
+        '[data-testid="layer-control"]'
       );
 
       // check all setting buttons
@@ -204,13 +204,13 @@ test.describe('<mapml-viewer> localization tests', () => {
       const map = await page.getByTestId(language);
 
       // zoom in
-      const zoomIn = await map.locator('.leaflet-control-zoom-in');
+      const zoomIn = await map.locator('[data-testid="zoom-in-button"]');
       const zoomInText = await zoomIn.getAttribute('title');
       expect(zoomInText).toBeTruthy();
       expect(zoomInText).toBe(locale.btnZoomIn);
 
       // zoom out
-      const zoomOut = await map.locator('.leaflet-control-zoom-out');
+      const zoomOut = await map.locator('[data-testid="zoom-out-button"]');
       const zoomOutText = await zoomOut.getAttribute('title');
       expect(zoomOutText).toBeTruthy();
       expect(zoomOutText).toBe(locale.btnZoomOut);

@@ -23,10 +23,10 @@
     <mapml-viewer data-testid="viewer" style="height: 500px;width:500px;" controls zoom="2" lat="68" lon="-87" controls projection="CBMTILE">
       <!-- map loads at z=2, so both layers should be enabled -->
       <map-layer data-testid="initial-mq" media="(0 <= map-zoom <=3)" checked>
-        <map-title>media query: (0 <= map-zoom <=3)</map-title>
+        <map-title>media query: (0 &lt;= map-zoom &lt;=3)</map-title>
         <map-meta name="projection" content="CBMTILE"></map-meta>
         <map-meta name="extent" content="top-left-easting=-2985112, top-left-northing=5403578, bottom-right-easting=3629485, bottom-right-northing=-1211019"></map-meta>
-        <!<!-- to be enabled, a map-layer must have in-view content -->
+        <!-- to be enabled, a map-layer must have in-view content -->
         <map-feature min="0" max="17"><map-geometry cs="gcrs"><map-point><map-coordinates>-87 68</map-coordinates></map-point></map-geometry></map-feature>
       </map-layer>
       <!-- at z=4, only this layer should be enabled -->

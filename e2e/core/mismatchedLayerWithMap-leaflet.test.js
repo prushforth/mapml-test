@@ -51,7 +51,7 @@ test.describe('Playwright Mismatched Layers Test', () => {
         `);
     await page.waitForLoadState('networkidle');
     await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right'
+      'div > div.leaflet-control-container > div[data-testid="layer-control"]'
     );
     const cbmtileLayer = await page.$eval(
       'body > map > map-layer:nth-child(1)',
@@ -101,7 +101,7 @@ test.describe('Playwright Mismatched Layers Test', () => {
         `);
     await page.waitForLoadState('networkidle');
     await page.hover(
-      'div > div.leaflet-control-container > div.leaflet-top.leaflet-right'
+      'div > div.leaflet-control-container > div[data-testid="layer-control"]'
     );
     const cbmtileLayer = await page.$eval('#checkMe', (controller) =>
       controller.hasAttribute('disabled')

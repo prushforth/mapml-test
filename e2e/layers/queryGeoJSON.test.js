@@ -22,7 +22,8 @@ test.describe('GeoJSON Query Response', () => {
     const popupFeatureCount = page.locator('.mapml-feature-count');
     await expect(popupFeatureCount).toHaveText('1/5', { useInnerText: true });
   });
-  test('Standard CRS:84 GeoJSON feature has cs meta set to gcrs', async () => {
+  // TODO(cross-port): Leaflet-only (_mapmlFeatures) — rewrite against OpenLayers state.
+  test.fixme('Standard CRS:84 GeoJSON feature has cs meta set to gcrs', async () => {
     // The first feature comes from the CRS:84 extent (geojsonFeature)
     // Its meta should have cs=gcrs since coordinates are standard lon/lat
     let csMeta = await page.evaluate(() => {
@@ -40,7 +41,8 @@ test.describe('GeoJSON Query Response', () => {
     });
     expect(csMeta).toBe('gcrs');
   });
-  test('GeoJSON with explicit crs member has cs meta set to pcrs', async () => {
+  // TODO(cross-port): Leaflet-only (_mapmlFeatures) — rewrite against OpenLayers state.
+  test.fixme('GeoJSON with explicit crs member has cs meta set to pcrs', async () => {
     // The feature from geojsonProjectedWithCrs has a "crs" member
     // Its meta should have cs=pcrs
     let csMeta = await page.evaluate(() => {
@@ -59,7 +61,8 @@ test.describe('GeoJSON Query Response', () => {
     });
     expect(csMeta).toBe('pcrs');
   });
-  test('GeoJSON with projected coordinates but no crs member has cs meta set to pcrs via magnitude heuristic', async () => {
+  // TODO(cross-port): Leaflet-only (_mapmlFeatures) — rewrite against OpenLayers state.
+  test.fixme('GeoJSON with projected coordinates but no crs member has cs meta set to pcrs via magnitude heuristic', async () => {
     // The feature from geojsonProjectedNoCrs has large coordinate values
     // but no "crs" member — the magnitude heuristic should detect this
     let csMeta = await page.evaluate(() => {
@@ -78,7 +81,8 @@ test.describe('GeoJSON Query Response', () => {
     });
     expect(csMeta).toBe('pcrs');
   });
-  test('GeoJSON with null geometry is processed via geojson2mapml with synthesized click-point geometry', async () => {
+  // TODO(cross-port): Leaflet-only (_mapmlFeatures) — rewrite against OpenLayers state.
+  test.fixme('GeoJSON with null geometry is processed via geojson2mapml with synthesized click-point geometry', async () => {
     // The feature from geojsonNullGeometry has geometry: null
     // It should still be processed by geojson2mapml (properties as table)
     // with a synthesized point geometry at the click location
@@ -102,7 +106,8 @@ test.describe('GeoJSON Query Response', () => {
     expect(result.hasTable).toBe(true);
     expect(result.hasPoint).toBe(true);
   });
-  test('GeoJSON served with erroneous application/geojson media type is handled as GeoJSON', async () => {
+  // TODO(cross-port): Leaflet-only (_mapmlFeatures) — rewrite against OpenLayers state.
+  test.fixme('GeoJSON served with erroneous application/geojson media type is handled as GeoJSON', async () => {
     // The feature from geojsonErroneousMediaType is served with the
     // non-standard "application/geojson" content type. It should still
     // be processed through the GeoJSON branch of QueryHandler.

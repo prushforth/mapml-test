@@ -19,7 +19,7 @@ async function zoomIn(requestCount, urlBase, url) {
   if (url !== '') expect(u).toContain(url);
 }
 
-exports.test = (
+const runTests = (
   path,
   z2,
   z3,
@@ -103,3 +103,7 @@ exports.test = (
     });
   });
 };
+
+// `test` is already bound to the Playwright import, so the suite factory is
+// exported as a property, keeping call sites (`helper.test(...)`) unchanged.
+export default { test: runTests };
