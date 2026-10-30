@@ -1,0 +1,6 @@
+# Upstream MapML.js e2e specs and fixtures: keep them byte-identical to
+# upstream so they diff 1:1.
+test/e2e/
+dist/
+reports/
+test-results/

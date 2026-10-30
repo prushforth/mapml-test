@@ -1,0 +1,24 @@
+{
+  "name": "mapml-test",
+  "version": "0.0.0",
+  "private": true,
+  "description": "MapML.js's e2e suite, run against any MapML.js-derived implementation (MapML.js, MapML-OpenLayers, MapML-MapLibre)",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node scripts/run.mjs",
+    "test:leaflet": "node scripts/run.mjs MapML.js",
+    "test:openlayers": "node scripts/run.mjs MapML-OpenLayers",
+    "test:maplibre": "node scripts/run.mjs MapML-MapLibre",
+    "build": "node scripts/run.mjs --build-only",
+    "serve": "node test/server.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "express": "^4.21.2",
+    "mapml-extension": "git+https://github.com/Maps4HTML/mapml-extension.git",
+    "playwright": "^1.64.1"
+  }
+}

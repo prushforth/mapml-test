@@ -1,0 +1,100 @@
+  <!doctype html>
+<html lang="en"><!-- default locale = en -->
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>localization.html</title>
+    <script>
+// The Ukrainian locale is injected by localization.test.js via
+// page.addInitScript (window.__browserLocale), sourced from mapml-extension's
+// uk/messages.json so it can never drift from the extension. The map-options
+// element must be in <head> before mapml-viewer connects. When opened
+// standalone (no test) it falls back to an empty locale, so the viewer still
+// loads but its strings won't be localized.
+    let options = document.createElement('map-options');
+    options.textContent = JSON.stringify({ locale: window.__browserLocale || {} });
+    document.head.appendChild(options);
+
+    let f1 = {
+      "type": "Feature",
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-75,45]
+      },
+      "properties": {"creation": "via global M.geojson2mapml"}
+    }, f2 = {
+      "type": "Feature",
+      "geometry": {
+          "type": "Point",
+          "coordinates": [-105,45]
+      },
+      "properties": {"creation": "via map.geojson2mapml"}
+    };
+    customElements.whenDefined('mapml-viewer').then(()=>{
+      let mapEn = document.body.querySelector('[data-testid=english]'),
+          mapFr = document.body.querySelector('[data-testid=french]'),
+          mapBrowser = document.body.querySelector('[data-testid=ukrainian]');
+      mapEn.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapFr.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapBrowser.appendChild(M.geojson2mapml(f1, {projection: 'CBMTILE'}));
+      mapEn.geojson2mapml(f2);
+      mapFr.geojson2mapml(f2);
+      mapBrowser.geojson2mapml(f2);
+      
+    }).catch((e)=>console.log(e));
+    </script>
+    <script type="module" src="./mapml.js"></script>
+  </head>
+  <body >
+    <mapml-viewer data-testid="french" lang="fr" projection="CBMTILE" zoom="2" lat="56.8" lon="-90" controls controlslist="geolocation search" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-link rel="search" tref="localization.mapml?q={searchTerms}"></map-link>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>Un lieu</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+      
+    </mapml-viewer>
+    <mapml-viewer data-testid="ukrainian" lang="browser-language" projection="CBMTILE" zoom="2" lat="56.8" lon="-90"  controls controlslist="geolocation search" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-link rel="search" tref="localization.mapml?q={searchTerms}"></map-link>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>A place - this map is not localized</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+    </mapml-viewer>
+    <mapml-viewer data-testid="english" lang="en" projection="CBMTILE" zoom="2" lat="56.8" lon="-90"  controls controlslist="geolocation search" width="500" height="275">
+      <layer- checked>
+        <map-meta name="projection" content="CBMTILE"></map-meta>
+        <map-link rel="search" tref="localization.mapml?q={searchTerms}"></map-link>
+        <map-extent units="CBMTILE" checked>
+          <map-link rel="query" tref="localization.mapml" ></map-link>
+        </map-extent>
+        <map-feature data-testid="map-feature">
+          <map-properties><h6>A place</h6></map-properties>
+          <map-geometry cs="gcrs">
+            <map-point><map-coordinates>-90 45</map-coordinates></map-point>
+          </map-geometry>
+          <a href="mapml-viewer.html"></a>
+        </map-feature>
+      </layer->
+      <layer- src="localization.red.mapml"></layer->
+    </mapml-viewer> 
+  </body>
+</html>
