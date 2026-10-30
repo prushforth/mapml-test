@@ -10,6 +10,9 @@ import { resolveImpl } from './implementations.js';
 const impl = resolveImpl(process.env.MAPML_IMPL, {
   root: import.meta.dirname
 });
+// Workers re-load this config; exporting the resolved name keeps them, and
+// test/helpers/capabilities.js, on the same implementation as the server.
+process.env.MAPML_IMPL = impl.name;
 if (!process.env.TEST_WORKER_INDEX) {
   console.log(`mapml-test: testing ${impl.name} (dist/${impl.name}/)`);
 }
@@ -22,6 +25,8 @@ export default defineConfig({
   // implementation can pass them.
   testIgnore: impl.leaflet ? [] : '**/*-leaflet.test.js',
   outputDir: `test-results/${impl.name}`,
+  // Read by tools/status.mjs to attribute a JSON report to its implementation.
+  metadata: { impl: impl.name },
   reporter: [['list'], ['json', { outputFile: `reports/${impl.name}.json` }]],
   webServer: {
     command: 'node test/server.js',

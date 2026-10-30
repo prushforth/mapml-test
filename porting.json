@@ -1,0 +1,839 @@
+{
+  "upstream": {
+    "repo": "MapML.js",
+    "path": "test/e2e",
+    "baseline": "c50003d338e9a210c8402af74e9d2060ad1b9901",
+    "baselineSubject": "Update playwright (#1068)",
+    "synced": [
+      "45401483 Fixes to support inline static <map-tile> rendering",
+      "c50003d3 Update playwright (#1068)"
+    ]
+  },
+  "specs": {
+    "api/domApi-HTMLLayerElement.test.js": {
+      "status": "not-started"
+    },
+    "api/domApi-mapml-viewer.test.js": {
+      "status": "not-started"
+    },
+    "api/domApi-web-map.test.js": {
+      "status": "not-started"
+    },
+    "api/events/map-change-event-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "api/events/map-projectionchange.test.js": {
+      "status": "not-started"
+    },
+    "api/locateApi.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/combined-matchMedia.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/map-bounding-box-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/map-projection.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/map-zoom-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/prefers-color-scheme.test.js": {
+      "status": "not-started"
+    },
+    "api/matchMedia/prefers-lang.test.js": {
+      "status": "not-started"
+    },
+    "core/announceMovement.test.js": {
+      "status": "not-started"
+    },
+    "core/ArrowKeyNavContextMenu.test.js": {
+      "status": "not-started"
+    },
+    "core/axisInferring.test.js": {
+      "status": "not-started"
+    },
+    "core/debugMode.test.js": {
+      "status": "not-started"
+    },
+    "core/drag-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "core/dragDrop-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "core/dragDropMap-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "core/featureIndexOverlayFocus.test.js": {
+      "status": "not-started"
+    },
+    "core/featureIndexOverlayResults.test.js": {
+      "status": "not-started"
+    },
+    "core/featureLinks.test.js": {
+      "status": "not-started"
+    },
+    "core/featureNavigation.test.js": {
+      "status": "not-started"
+    },
+    "core/focusControls.test.js": {
+      "status": "not-started"
+    },
+    "core/fullscreenControl.test.js": {
+      "status": "not-started"
+    },
+    "core/history.test.js": {
+      "status": "not-started"
+    },
+    "core/kbdAttribution.test.js": {
+      "status": "not-started"
+    },
+    "core/layerAttributes.test.js": {
+      "status": "not-started"
+    },
+    "core/layerContextMenu.test.js": {
+      "status": "not-started"
+    },
+    "core/layerContextMenuKeyboard.test.js": {
+      "status": "not-started"
+    },
+    "core/linkTypes.test.js": {
+      "status": "not-started"
+    },
+    "core/mapContextMenu.test.js": {
+      "status": "not-started"
+    },
+    "core/mapContextMenuKeyboard.test.js": {
+      "status": "not-started"
+    },
+    "core/mapElement.test.js": {
+      "status": "not-started"
+    },
+    "core/mapFeature.test.js": {
+      "status": "not-started"
+    },
+    "core/mapSpan-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "core/metaDefault.test.js": {
+      "status": "not-started"
+    },
+    "core/mismatchedLayerWithMap-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "core/missingMetaParameters.test.js": {
+      "status": "not-started"
+    },
+    "core/popupTabNavigation.test.js": {
+      "status": "not-started"
+    },
+    "core/projectionChange.test.js": {
+      "status": "not-started"
+    },
+    "core/projectionDefault.test.js": {
+      "status": "not-started"
+    },
+    "core/reticle.test.js": {
+      "status": "not-started"
+    },
+    "core/scroll.test.js": {
+      "status": "not-started"
+    },
+    "core/searchCustomHandler.test.js": {
+      "status": "not-started"
+    },
+    "core/searchDefault.test.js": {
+      "status": "not-started"
+    },
+    "core/searchDisabled.test.js": {
+      "status": "not-started"
+    },
+    "core/searchI18n.test.js": {
+      "status": "not-started"
+    },
+    "core/searchMultiLayer.test.js": {
+      "status": "not-started"
+    },
+    "core/styleParsing.test.js": {
+      "status": "not-started"
+    },
+    "core/tms.test.js": {
+      "status": "not-started"
+    },
+    "core/touchDevice.test.js": {
+      "status": "not-started"
+    },
+    "core/zoomChangeProjection.test.js": {
+      "status": "not-started"
+    },
+    "elements/layer-/layer-dash-extent-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "elements/layer-/layer-dash-src.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-a/map-a-inline-or-remote-templated.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-extent/handleChange-bug.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-extent/map-extent-api.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-extent/map-extent-checked-ordering-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-extent/map-extent-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-extent/map-extent.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-feature/feature-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-feature/map-feature-extent-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-feature/map-feature-rendering.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-input/map-input-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-layer/layer-extent-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-layer/layer-src.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-layer/map-layer-media.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-api.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-disabled.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-media.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-security.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link-stylesheet-media.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/map-link.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-link/pmtiles/map-link-pmtiles-styles-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-style/map-style-media.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-style/map-style.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-tile/map-tile-row-col-zoom-immutable.test.js": {
+      "status": "not-started"
+    },
+    "elements/map-tile/map-tile.test.js": {
+      "status": "not-started"
+    },
+    "elements/map/map-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/mapml-viewer/mapml-viewer-in-shadow-root.test.js": {
+      "status": "not-started"
+    },
+    "elements/mapml-viewer/mapml-viewer-unknown-projection.test.js": {
+      "status": "not-started"
+    },
+    "features/mapFeature.test.js": {
+      "status": "not-started"
+    },
+    "geojson/geojson2mapml.test.js": {
+      "status": "not-started"
+    },
+    "geojson/mapml2geojson.test.js": {
+      "status": "not-started"
+    },
+    "layers/clientTemplatedTileLayer.test.js": {
+      "status": "not-started"
+    },
+    "layers/CustomProjectionLayers.test.js": {
+      "status": "not-started"
+    },
+    "layers/featureLayer.test.js": {
+      "status": "not-started"
+    },
+    "layers/layerControl.test.js": {
+      "status": "not-started"
+    },
+    "layers/layerLabel.test.js": {
+      "status": "not-started"
+    },
+    "layers/layerOpacityAttribute.test.js": {
+      "status": "not-started"
+    },
+    "layers/mixedLayer-zindex-rendering.test.js": {
+      "status": "not-started"
+    },
+    "layers/multipleExtents.test.js": {
+      "status": "not-started"
+    },
+    "layers/multipleExtentsOpacity.test.js": {
+      "status": "not-started"
+    },
+    "layers/multipleHeterogeneousQueryExtents.test.js": {
+      "status": "not-started"
+    },
+    "layers/multipleQueryExtents.test.js": {
+      "status": "not-started"
+    },
+    "layers/queryableMapExtent-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "layers/queryFeatureCSFallback.test.js": {
+      "status": "not-started"
+    },
+    "layers/queryGeoJSON.test.js": {
+      "status": "not-started"
+    },
+    "layers/queryLink-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "layers/staticTileLayer.test.js": {
+      "status": "not-started"
+    },
+    "layers/step/featureStep.test.js": {
+      "status": "not-started"
+    },
+    "layers/step/imageStep.test.js": {
+      "status": "not-started"
+    },
+    "layers/step/tileStep.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedFeatures.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedFeaturesCleanup-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedFeaturesFilter.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedFeaturesOrTilesLayer.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedImageLayer.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedMapMLTileLayer-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedPMTilesMVTLayer-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "layers/templatedTileLayer.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/cssDomination.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/customTCRS.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/localization.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/locateButton.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/mapml-viewer.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/mapml-viewerCaption.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/mapml-viewerControls.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/mapml-viewerHeightAndWidthAttributes.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/mapml-viewerScale.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/staticAttribute-leaflet.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/staticControl.test.js": {
+      "status": "not-started"
+    },
+    "mapml-viewer/viewerContextMenu.test.js": {
+      "status": "not-started"
+    },
+    "web-map/map.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapCaption.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapControls.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapCssNoDomination.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapHeightAndWidthAttributes.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapScale.test.js": {
+      "status": "not-started"
+    },
+    "web-map/mapStatic-leaflet.test.js": {
+      "status": "not-started"
+    }
+  },
+  "portTests": {
+    "MapML-OpenLayers": {
+      "test/alternate-projection.test.js": {
+        "status": "pending"
+      },
+      "test/announce-movement.test.js": {
+        "status": "pending"
+      },
+      "test/attribution.test.js": {
+        "status": "pending"
+      },
+      "test/context-menu-copy.test.js": {
+        "status": "pending"
+      },
+      "test/context-menu.test.js": {
+        "status": "pending"
+      },
+      "test/custom-projection-disable.test.js": {
+        "status": "pending"
+      },
+      "test/custom-projection.test.js": {
+        "status": "pending"
+      },
+      "test/debug-mode.test.js": {
+        "status": "pending"
+      },
+      "test/disabled-cascade.test.js": {
+        "status": "pending"
+      },
+      "test/domApi-HTMLLayerElement.test.js": {
+        "status": "pending"
+      },
+      "test/drag-drop.test.js": {
+        "status": "pending"
+      },
+      "test/extent-feature-order.test.js": {
+        "status": "pending"
+      },
+      "test/extent-opacity.test.js": {
+        "status": "pending"
+      },
+      "test/extent-reorder.test.js": {
+        "status": "pending"
+      },
+      "test/feature-a11y.test.js": {
+        "status": "pending"
+      },
+      "test/feature-index.test.js": {
+        "status": "pending"
+      },
+      "test/feature-interaction.test.js": {
+        "status": "pending"
+      },
+      "test/feature.test.js": {
+        "status": "pending"
+      },
+      "test/fullscreen.test.js": {
+        "status": "pending"
+      },
+      "test/hidden-toggle.test.js": {
+        "status": "pending"
+      },
+      "test/history.test.js": {
+        "status": "pending"
+      },
+      "test/i18n.test.js": {
+        "status": "pending"
+      },
+      "test/keyboard.test.js": {
+        "status": "pending"
+      },
+      "test/layer-context-menu.test.js": {
+        "status": "pending"
+      },
+      "test/layer-control.test.js": {
+        "status": "pending"
+      },
+      "test/layer-loadedmetadata.test.js": {
+        "status": "pending"
+      },
+      "test/layer-opacity.test.js": {
+        "status": "pending"
+      },
+      "test/layer-reorder.test.js": {
+        "status": "pending"
+      },
+      "test/legend.test.js": {
+        "status": "pending"
+      },
+      "test/localization.test.js": {
+        "status": "pending"
+      },
+      "test/locate.test.js": {
+        "status": "pending"
+      },
+      "test/map-a-inline-or-remote-templated.test.js": {
+        "status": "pending"
+      },
+      "test/map-a-subring.test.js": {
+        "status": "pending"
+      },
+      "test/map-a.test.js": {
+        "status": "pending"
+      },
+      "test/map-area.test.js": {
+        "status": "pending"
+      },
+      "test/map-caption.test.js": {
+        "status": "pending"
+      },
+      "test/map-layer-media.test.js": {
+        "status": "pending"
+      },
+      "test/map-link-disabled.test.js": {
+        "status": "pending"
+      },
+      "test/map-link-media.test.js": {
+        "status": "pending"
+      },
+      "test/map-link-style.test.js": {
+        "status": "pending"
+      },
+      "test/map-link-stylesheet-media.test.js": {
+        "status": "pending"
+      },
+      "test/map-link-stylesheet.test.js": {
+        "status": "pending"
+      },
+      "test/map-span-subring.test.js": {
+        "status": "pending"
+      },
+      "test/map-style-media.test.js": {
+        "status": "pending"
+      },
+      "test/map-style.test.js": {
+        "status": "pending"
+      },
+      "test/mapml2geojson.test.js": {
+        "status": "pending"
+      },
+      "test/match-media.test.js": {
+        "status": "pending"
+      },
+      "test/meta.test.js": {
+        "status": "pending"
+      },
+      "test/mvt.test.js": {
+        "status": "pending"
+      },
+      "test/paste.test.js": {
+        "status": "pending"
+      },
+      "test/pmtiles.test.js": {
+        "status": "pending"
+      },
+      "test/projection-switch.test.js": {
+        "status": "pending"
+      },
+      "test/query-geojson.test.js": {
+        "status": "pending"
+      },
+      "test/query.test.js": {
+        "status": "pending"
+      },
+      "test/remote-extent-layer-control.test.js": {
+        "status": "pending"
+      },
+      "test/remote-layer.test.js": {
+        "status": "pending"
+      },
+      "test/scale.test.js": {
+        "status": "pending"
+      },
+      "test/search.test.js": {
+        "status": "pending"
+      },
+      "test/smoke.test.js": {
+        "status": "pending"
+      },
+      "test/spearfish.test.js": {
+        "status": "pending"
+      },
+      "test/static-tiles-toggle.test.js": {
+        "status": "pending"
+      },
+      "test/static-tiles.test.js": {
+        "status": "pending"
+      },
+      "test/static.test.js": {
+        "status": "pending"
+      },
+      "test/templated-features.test.js": {
+        "status": "pending"
+      },
+      "test/templated-image-select.test.js": {
+        "status": "pending"
+      },
+      "test/templated-image.test.js": {
+        "status": "pending"
+      },
+      "test/templated-tiles-bbox.test.js": {
+        "status": "pending"
+      },
+      "test/templated-tiles.test.js": {
+        "status": "pending"
+      },
+      "test/text-mapml-tiles.test.js": {
+        "status": "pending"
+      },
+      "test/tms.test.js": {
+        "status": "pending"
+      },
+      "test/toggle-controls.test.js": {
+        "status": "pending"
+      },
+      "test/web-map.test.js": {
+        "status": "pending"
+      }
+    },
+    "MapML-MapLibre": {
+      "tests/announce-movement.spec.ts": {
+        "status": "pending"
+      },
+      "tests/attribution.spec.ts": {
+        "status": "pending"
+      },
+      "tests/context-menu.spec.ts": {
+        "status": "pending"
+      },
+      "tests/controls-list.spec.ts": {
+        "status": "pending"
+      },
+      "tests/crosshair.spec.ts": {
+        "status": "pending"
+      },
+      "tests/disabled-layers.spec.ts": {
+        "status": "pending"
+      },
+      "tests/disabled-out-of-view.spec.ts": {
+        "status": "pending"
+      },
+      "tests/drag-drop.spec.ts": {
+        "status": "pending"
+      },
+      "tests/extent-derivation.spec.ts": {
+        "status": "pending"
+      },
+      "tests/feature-index-control.spec.ts": {
+        "status": "pending"
+      },
+      "tests/feature-navigation.spec.ts": {
+        "status": "pending"
+      },
+      "tests/fullscreen-control.spec.ts": {
+        "status": "pending"
+      },
+      "tests/i18n.spec.ts": {
+        "status": "pending"
+      },
+      "tests/in-shadow-root.spec.ts": {
+        "status": "pending"
+      },
+      "tests/inline-alternate.spec.ts": {
+        "status": "pending"
+      },
+      "tests/layer-context-menu.spec.ts": {
+        "status": "pending"
+      },
+      "tests/layer-reorder.spec.ts": {
+        "status": "pending"
+      },
+      "tests/legend-link.spec.ts": {
+        "status": "pending"
+      },
+      "tests/link-features-tiles.spec.ts": {
+        "status": "pending"
+      },
+      "tests/link-features.spec.ts": {
+        "status": "pending"
+      },
+      "tests/link-tile-mapml.spec.ts": {
+        "status": "pending"
+      },
+      "tests/locate-api.spec.ts": {
+        "status": "pending"
+      },
+      "tests/locate-button.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-a.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-area.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-caption.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-change-event.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-extent-api.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-extent-checked-ordering.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-extent.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-feature.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-layer-media.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-disabled.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-media.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-ordering.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-style.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-stylesheet-media.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-link-stylesheet.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-select.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-style-media.spec.ts": {
+        "status": "pending"
+      },
+      "tests/map-style.spec.ts": {
+        "status": "pending"
+      },
+      "tests/mapml-viewer-in-shadow-root.spec.ts": {
+        "status": "pending"
+      },
+      "tests/mapml2geojson.spec.ts": {
+        "status": "pending"
+      },
+      "tests/match-media.spec.ts": {
+        "status": "pending"
+      },
+      "tests/mvt-tiles.spec.ts": {
+        "status": "pending"
+      },
+      "tests/opacity-attribute.spec.ts": {
+        "status": "pending"
+      },
+      "tests/pmtiles.spec.ts": {
+        "status": "pending"
+      },
+      "tests/projection-degraded-extent.spec.ts": {
+        "status": "pending"
+      },
+      "tests/raster-tiles.spec.ts": {
+        "status": "pending"
+      },
+      "tests/remote-alternate.spec.ts": {
+        "status": "pending"
+      },
+      "tests/remote-layer.spec.ts": {
+        "status": "pending"
+      },
+      "tests/scale.spec.ts": {
+        "status": "pending"
+      },
+      "tests/scroll.spec.ts": {
+        "status": "pending"
+      },
+      "tests/search-control.spec.ts": {
+        "status": "pending"
+      },
+      "tests/smoke.spec.ts": {
+        "status": "pending"
+      },
+      "tests/spearfish-wms-mapml-tile.spec.ts": {
+        "status": "pending"
+      },
+      "tests/static-attribute.spec.ts": {
+        "status": "pending"
+      },
+      "tests/static-control.spec.ts": {
+        "status": "pending"
+      },
+      "tests/touch-layer-control.spec.ts": {
+        "status": "pending"
+      },
+      "tests/view-attrs-reflect.spec.ts": {
+        "status": "pending"
+      },
+      "tests/view-modes.spec.ts": {
+        "status": "pending"
+      },
+      "tests/viewer-scale-values.spec.ts": {
+        "status": "pending"
+      },
+      "tests/web-map.spec.ts": {
+        "status": "pending"
+      },
+      "tests/wms-image.spec.ts": {
+        "status": "pending"
+      },
+      "tests/wms-query.spec.ts": {
+        "status": "pending"
+      },
+      "tests/wms-tile-mapml.spec.ts": {
+        "status": "pending"
+      },
+      "tests/wms-tile-query.spec.ts": {
+        "status": "pending"
+      },
+      "tests/wms-tile.spec.ts": {
+        "status": "pending"
+      },
+      "tests/xss-security.spec.ts": {
+        "status": "pending"
+      }
+    }
+  }
+}

@@ -9,9 +9,19 @@ implementation:
 | `MapML-OpenLayers`                 | `../MapML-OpenLayers` | `npm run build`                     |
 | `MapML-MapLibre`                   | `../MapML-MapLibre`   | `npm run build`                     |
 
-The specs and fixtures in [test/e2e](test/e2e) are MapML.js's own
-(`test/e2e` upstream). They are kept as close to byte-identical to upstream as
-possible so they diff 1:1, and are excluded from Prettier.
+The specs and fixtures in [test/e2e](test/e2e) started as MapML.js's own
+(`test/e2e` upstream) and are being converted, one spec at a time, into a
+single suite that tests all three implementations. They are excluded from
+Prettier, to keep diffs against upstream readable.
+
+- [docs/PLAN.md](docs/PLAN.md): the plan of record: decisions, the routine
+  for converting a spec, the order of work, and how to pick it up on another
+  workstation.
+- [docs/CONTRACT.md](docs/CONTRACT.md): what implementations must provide for
+  the specs (control `data-testid`s, menu `data-id`s, control lifecycle,
+  usable API).
+- [PORTING.md](PORTING.md): status of every spec and every port-specific
+  test, with the latest results, generated from [porting.json](porting.json).
 
 ## Setup
 
@@ -52,6 +62,32 @@ Running `npx playwright test` directly (or from the VS Code Playwright
 extension) tests `MAPML_IMPL`, or, when that is unset, whichever
 implementation was built most recently.
 
+### Debugging one test against one implementation
+
+Name the implementation before `--`; everything after `--` goes to
+`playwright test`, so pick the test there (by `file:line`, or by title with
+`-g`) and add `--debug`:
+
+```bash
+node scripts/run.mjs ol --no-copy -- test/e2e/core/mapElement.test.js:38 --debug
+node scripts/run.mjs leaflet --no-copy -- test/e2e/core/mapElement.test.js -g "Initial map element extent" --debug
+
+# the same through npm (the first -- is npm's own)
+npm run test:openlayers -- --no-copy -- test/e2e/core/mapElement.test.js:38 --debug
+
+# or bypass the runner: MAPML_IMPL picks the implementation
+MAPML_IMPL=ol npx playwright test test/e2e/core/mapElement.test.js:38 --debug
+```
+
+- `--no-copy` debugs what is already in `dist/<name>/`. Use `--no-build` to
+  re-copy the sibling's current `dist/` first, or neither to rebuild it.
+- `--debug` opens a headed browser and the Playwright Inspector, and turns off
+  the test timeout, so it needs a display (WSL2's WSLg provides one).
+- Many upstream specs share one page across a `describe` block, so a test can
+  depend on what the tests before it did to that page. If a test fails only
+  when run on its own, debug the whole file and step through to it in the
+  Inspector.
+
 ## How it works
 
 - [test/server.js](test/server.js) is a port of MapML.js's `test/server.js`:
@@ -70,29 +106,45 @@ implementation was built most recently.
 - [playwright.config.js](playwright.config.js) mirrors MapML.js's config, so
   screenshot baselines under `*.test.js-snapshots/` are upstream's (i.e.
   Leaflet renderings).
+- Each implementation's `capabilities` in `implementations.js` decide which
+  capability-tagged tests it runs (the rest are skipped, with a reason).
 
 ## Conventions
 
-- `*-leaflet.test.js` specs assert Leaflet internals throughout. They run only
-  against `MapML.js` and are ignored for the other implementations.
-- Individual Leaflet-bound tests in mixed files are quarantined as
-  `test.fixme(...)` with a `// TODO(cross-port): Leaflet-only (...)` comment
-  naming the blocking API (see [tools/quarantine-leaflet.js](tools/quarantine-leaflet.js)).
-  To bring one back, rewrite it against renderer-agnostic state and drop both.
-  Note that `fixme` also skips them for `MapML.js`.
-- [test/helpers/render.js](test/helpers/render.js) has renderer-agnostic
-  "did it render" probes: `trackRequests` (layer resources fetched) and
-  `mapPixels`/`settledMapPixels` (centre-of-map screenshots, only ever
-  compared with another capture from the same run).
-- Where upstream asserts a Leaflet class or DOM detail, prefer an assertion
-  that holds in every implementation (e.g. the `data-testid` control contract,
-  see [tools/retestid.js](tools/retestid.js)) over per-implementation branches.
+The rules for writing and converting specs are in
+[docs/PLAN.md](docs/PLAN.md) (decisions D1 to D8) and
+[docs/CONTRACT.md](docs/CONTRACT.md). In brief:
+
+- Assert through the contract and public API, never through one renderer's
+  DOM or private state.
+- A test needing a capability not every implementation has (e.g. CBMTILE) is
+  tagged and calls `requires()` from
+  [test/helpers/capabilities.js](test/helpers/capabilities.js), so it is
+  skipped, with a reason, where unsupported.
+- Each test sets up its own state.
+- Rendering is checked with [test/helpers/render.js](test/helpers/render.js):
+  `trackRequests` (layer resources fetched) and `mapPixels` /
+  `settledMapPixels` (centre-of-map screenshots, only ever compared with
+  another capture from the same run).
+- Still to be converted: `*-leaflet.test.js` specs (run only against
+  MapML.js) and `test.fixme` tests marked `// TODO(cross-port): Leaflet-only`.
+  Both are temporary quarantine; the target is none.
+
+## Porting status
+
+`scripts/run.mjs` records each run's per-spec results in
+[porting.json](porting.json) and regenerates [PORTING.md](PORTING.md), but
+only for unfiltered runs (no `-g`, `--grep`, `file:line`, ...), so partial
+runs never overwrite a spec's full results. After editing `porting.json` by
+hand (statuses, notes, superseded port-specific tests), run
+`node tools/status.mjs`.
 
 ## Syncing upstream test changes
 
-To bring a MapML.js commit's test changes over while keeping local edits:
+See [docs/PLAN.md](docs/PLAN.md), D7. In short:
 
 ```bash
+git -C ../MapML.js log --oneline <baseline>..main -- test/e2e   # baseline: porting.json
 git -C ../MapML.js show <sha> -- test/e2e > /tmp/upstream.patch
 # rename paths for any spec quarantined here as *-leaflet.test.js, e.g.
 sed -i 's#e2e/layers/queryLink.test.js#e2e/layers/queryLink-leaflet.test.js#g' /tmp/upstream.patch
@@ -100,8 +152,7 @@ git apply --check -v /tmp/upstream.patch
 git apply --reject /tmp/upstream.patch   # then merge any *.rej by hand
 ```
 
-The paths line up (`test/e2e/...` in both repos), so no `-p`/`--directory`
-is needed.
+Then update `upstream.baseline` and `upstream.synced` in `porting.json`.
 
 ## Triage tools
 

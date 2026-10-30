@@ -4,3 +4,5 @@ test/e2e/
 dist/
 reports/
 test-results/
+PORTING.md
+porting.json

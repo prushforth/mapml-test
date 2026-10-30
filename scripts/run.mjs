@@ -28,6 +28,7 @@ import {
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { IMPLEMENTATIONS, findImpl } from '../implementations.js';
+import { updateStatus } from '../tools/status.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -161,6 +162,14 @@ function summarize(impl) {
 }
 
 const opts = parseArgs(process.argv.slice(2));
+// Only a run of whole files may update porting.json: a filtered run's counts
+// would overwrite a file's full results with a subset.
+const filtered = opts.playwrightArgs.some(
+  (a) =>
+    /^(-g|--grep|--grep-invert|--last-failed|--only-changed|--repeat-each|--shard)\b/.test(
+      a
+    ) || /\.test\.js:\d+/.test(a)
+);
 const results = {};
 let worst = 0;
 
@@ -189,6 +198,8 @@ for (const impl of opts.impls) {
       );
       worst = Math.max(worst, status);
       results[impl.name] = summarize(impl) ?? { error: `exit ${status}` };
+      const report = join(ROOT, 'reports', `${impl.name}.json`);
+      if (!filtered && existsSync(report)) updateStatus([report]);
     }
   } catch (e) {
     console.error(`\n${e.message}`);

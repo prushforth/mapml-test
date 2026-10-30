@@ -8,6 +8,17 @@
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
+// Capabilities a test can require (docs/PLAN.md, "Capabilities"). A test
+// tagged with one an implementation lacks is skipped for it, with a reason.
+export const CAPABILITIES = [
+  'OSMTILE',
+  'CBMTILE',
+  'WGS84',
+  'APSTILE',
+  'custom-projection'
+];
+const ALL_PROJECTIONS = CAPABILITIES;
+
 export const IMPLEMENTATIONS = [
   {
     name: 'MapML.js',
@@ -28,7 +39,10 @@ export const IMPLEMENTATIONS = [
     include: null, // everything: mapml.css, images/ and pmtilesRules.js too
     entry: 'mapml.js',
     // The reference implementation: *-leaflet.test.js specs only run here.
-    leaflet: true
+    leaflet: true,
+    capabilities: ALL_PROJECTIONS,
+    // Its own e2e suite is the upstream of test/e2e; see docs/PLAN.md.
+    portTests: null
   },
   {
     name: 'MapML-OpenLayers',
@@ -37,7 +51,11 @@ export const IMPLEMENTATIONS = [
     build: ['npm', 'run', 'build'],
     dist: 'dist',
     include: ['mapml-ol.js', 'mapml-ol.js.map'],
-    entry: 'mapml-ol.js'
+    entry: 'mapml-ol.js',
+    capabilities: ALL_PROJECTIONS,
+    // Port-specific tests, to be superseded by test/e2e (docs/PLAN.md).
+    // test/unit holds vitest unit tests of OL internals: port-specific by nature.
+    portTests: { dir: 'test', match: /\.test\.js$/, exclude: /^test\/unit\// }
   },
   {
     name: 'MapML-MapLibre',
@@ -48,9 +66,22 @@ export const IMPLEMENTATIONS = [
     // The runtime only: the bundle plus its hashed worker chunk. The type
     // declarations (*.d.ts, controls/, core/, ...) are not needed.
     include: ['mapml-maplibre.js', 'mapml-maplibre.js.map', 'assets'],
-    entry: 'mapml-maplibre.js'
+    entry: 'mapml-maplibre.js',
+    // MapLibre GL only accepts Web Mercator tile grids
+    // (MapML-MapLibre src/core/projection.ts).
+    capabilities: ['OSMTILE'],
+    portTests: { dir: 'tests', match: /\.spec\.ts$/ }
   }
 ];
+
+export function supports(impl, capability) {
+  if (!CAPABILITIES.includes(capability)) {
+    throw new Error(
+      `Unknown capability "${capability}". Known: ${CAPABILITIES.join(', ')}.`
+    );
+  }
+  return impl.capabilities.includes(capability);
+}
 
 export function findImpl(name) {
   const key = String(name).toLowerCase();
