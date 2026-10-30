@@ -23,7 +23,9 @@ export function trackRequests(page, match = /\.(png|jpe?g|webp|mapml)(\?|$)/) {
       return responses.map(([url]) => url);
     },
     get failed() {
-      return responses.filter(([, status]) => status >= 400).map(([url]) => url);
+      return responses
+        .filter(([, status]) => status >= 400)
+        .map(([url]) => url);
     },
     count: (re) => responses.filter(([url]) => re.test(url)).length,
     clear: () => responses.splice(0)

@@ -1,0 +1,19 @@
+<mapml- xmlns="http://www.w3.org/1999/xhtml">
+  <!-- OSMTILE counterpart of ../cbmt/cbmt.mapml: a raster tile layer drawn
+       entirely from the local tiles in this folder (whole world, zoom 0-1),
+       so a spec can run the same scenario in OSMTILE and CBMTILE. -->
+  <map-head>
+    <map-title>OpenStreetMap (test tiles)</map-title>
+    <map-meta http-equiv="Content-Type" content="text/mapml"></map-meta>
+    <map-link rel="license" href="https://www.openstreetmap.org/copyright"
+      title="© OpenStreetMap contributors"></map-link>
+  </map-head>
+  <map-body>
+    <map-extent units="OSMTILE" checked="checked" hidden="hidden">
+      <map-input name="z" type="zoom" value="1" min="0" max="1"></map-input>
+      <map-input name="x" type="location" units="tilematrix" axis="column" min="0" max="2"></map-input>
+      <map-input name="y" type="location" units="tilematrix" axis="row" min="0" max="2"></map-input>
+      <map-link rel="tile" tref="{z}/{x}/{y}.png"></map-link>
+    </map-extent>
+  </map-body>
+</mapml->

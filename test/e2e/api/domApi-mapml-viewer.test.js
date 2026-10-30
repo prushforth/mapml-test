@@ -1,1208 +1,472 @@
-import { test, expect, chromium } from '@playwright/test';
+// Converted for all implementations (mapml-test docs/PLAN.md). Upstream:
+// MapML.js test/e2e/api/domApi-mapml-viewer.test.js. Each test builds its own
+// viewer (D4), controls are read through the contract (docs/CONTRACT.md), and
+// the scenarios run in OSMTILE and again in CBMTILE (D3).
+import { test, expect } from '@playwright/test';
 import {
   trackRequests,
   mapPixels,
   settledMapPixels
 } from '../../helpers/render.js';
-
-test.describe('mapml-viewer DOM API Tests', () => {
-  let page;
-  let context;
-  let requests;
-  test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('');
-    page =
-      context.pages().find((page) => page.url() === 'about:blank') ||
-      (await context.newPage());
-    page = await context.newPage();
-    requests = trackRequests(page);
-    await page.goto('domApi-mapml-viewer.html', { waitUntil: 'networkidle' });
-  });
-
-  test.afterAll(async function () {
-    await context.close();
-  });
-
-  test('Create a map viewer with document.createElement(mapml-viewer)', async () => {
-    // check for error messages in console
-    let errorLogs = [];
-    page.on('pageerror', (err) => {
-      errorLogs.push(err.message);
-    });
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.createElement('mapml-viewer')
-    );
-    const nn = await (
-      await page.evaluateHandle((viewer) => viewer.nodeName, viewerHandle)
-    ).jsonValue();
-    expect(nn).toEqual('MAPML-VIEWER');
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lat', 45),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lon', -90),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('zoom', 2),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('controls', ''),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('width', '600'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('height', '600'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('projection', 'CBMTILE'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => document.body.appendChild(viewer),
-      viewerHandle
-    );
-    const velName = await page.evaluate(
-      () => document.body.querySelector('mapml-viewer').nodeName
-    );
-    expect(velName).toBe('MAPML-VIEWER');
-    // check for error messages in console
-    expect(errorLogs.length).toBe(0);
-    // testing to ensure mapml-viewer was successfully implemented
-    let verifymap = await page.evaluate(
-      (viewer) => document.body.querySelector('mapml-viewer').shadowRoot
-    );
-    expect(verifymap).toBeTruthy();
-    // the map, having 0 layers, should not have a layer control, despite the controls attribute
-    expect(await page.getByTestId('layer-control').isHidden()).toEqual(true);
-  });
-
-  test('Create a layer with document.createElement(map-layer)', async () => {
-    const blankMap = await settledMapPixels(page);
-    requests.clear();
-    const layerHandle = await page.evaluateHandle(() =>
-      document.createElement('map-layer')
-    );
-    const nn = await (
-      await page.evaluateHandle((viewer) => viewer.nodeName, layerHandle)
-    ).jsonValue();
-    expect(nn).toEqual('MAP-LAYER');
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('label', 'CBMT'),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('checked', ''),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => document.querySelector('mapml-viewer').appendChild(layer),
-      layerHandle
-    );
-    let layerControl = await page.locator('[data-testid="layer-control"]');
-    await expect(layerControl).toBeVisible();
-
-    // set the layer's hidden attribute, the layer should be removed from the layer
-    // control (but not the map), which leaves 0 layers in the layer control, which means the
-    // layer control should disappear
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('hidden', ''),
-      layerHandle
-    );
-    await expect(layerControl).toBeHidden();
-
-    // The layer is active: it went to the network for tiles. Which tiles, how
-    // many, and at what scale is the renderer's business and differs per port.
-    await expect.poll(() => requests.count(/\.png$/)).toBeGreaterThan(0);
-
-    // And something was drawn: the middle of the map no longer looks blank.
-    await expect
-      .poll(async () => (await mapPixels(page)).equals(blankMap))
-      .toBe(false);
-
-    expect(requests.failed).toEqual([]);
-  });
-
-  test('Remove mapml-viewer from DOM, add it back in', async () => {
-    // the layer from the previous test is still on the map; re-attaching has to
-    // bring back exactly this
-    const paintedMap = await settledMapPixels(page);
-    requests.clear();
-    // check for error messages in console
-    let errorLogs = [];
-    page.on('pageerror', (err) => {
-      errorLogs.push(err.message);
-    });
-    // locators avoid flaky tests, allegedly
-    const viewer = await page.locator('mapml-viewer');
-    await viewer.evaluate(() => {
-      let m = document.querySelector('mapml-viewer');
-      document.body.removeChild(m);
-      document.body.appendChild(m);
-    });
-    await viewer.evaluate((viewer) =>
-      viewer.querySelector('map-layer').whenReady()
-    );
-    await page.waitForTimeout(250);
-    expect(
-      await viewer.evaluate(() => {
-        let m = document.querySelector('mapml-viewer');
-        let l = m.querySelector('map-layer');
-        return l.label;
-        // the label attribute is ignored if the mapml document has a map-title
-        // element, which is the case here.  Since the layer loads over the
-        // network, it means that the map is back to normal after being re-added
-        /// to the DOM, if the label reads as follows:
-      })
-    ).toEqual('Canada Base Map - Transportation (CBMT)');
-
-    // check for error messages in console
-    expect(errorLogs.length).toBe(0);
-
-    // The layer is live again: it re-read its MapML document. The tiles are not
-    // refetched - they are already in the browser cache.
-    await expect.poll(() => requests.count(/\.mapml$/)).toBeGreaterThan(0);
-
-    // And the map is back to normal: it repainted what it had before.
-    await expect
-      .poll(async () => (await mapPixels(page)).equals(paintedMap))
-      .toBe(true);
-
-    expect(requests.failed).toEqual([]);
-  });
-
-  test('Toggle all mapml-viewer controls by adding or removing controls attribute', async () => {
-    await page.evaluateHandle(() =>
-      document.querySelector('map-layer').setAttribute('hidden', '')
-    );
-    await page.evaluateHandle(() =>
-      document.querySelector('map-layer').removeAttribute('hidden')
-    );
-
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer')
-    );
-    let hasControls = await page.evaluate(
-      (viewer) => viewer.hasAttribute('controls'),
-      viewerHandle
-    );
-    expect(hasControls).toBe(true);
-
-    await page.evaluate(
-      (viewer) => viewer.removeAttribute('controls'),
-      viewerHandle
-    );
-    hasControls = await page.evaluate(
-      (viewer) => viewer.hasAttribute('controls'),
-      viewerHandle
-    );
-    expect(hasControls).toBe(false);
-
-    // ALL the controls displayed on the map should have disappeared
-    let zoomHidden = await page.getByTestId('zoom-control').evaluate((div) => div.hidden);
-    let reloadHidden = await page.getByTestId('reload-control').evaluate((div) => div.hidden);
-    let fullscreenHidden = await page.getByTestId('fullscreen-control').evaluate((div) => div.hidden);
-    let layerControlHidden = await page.getByTestId('layer-control').evaluate((div) => div.hidden);
-    let scaleHidden = await page.getByTestId('scale-control').evaluate((div) => div.hidden);
-    let geolocation = await page.getByTestId('locate-control').evaluate((div) => div.hidden);
-    expect(geolocation).toEqual(true);
-    expect(zoomHidden).toEqual(true);
-    expect(reloadHidden).toEqual(true);
-    expect(fullscreenHidden).toEqual(true);
-    expect(layerControlHidden).toEqual(true);
-    expect(scaleHidden).toEqual(true);
-  });
-  test('Removing layer removes layer control', async () => {
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer')
-    );
-    await page.evaluate(
-      (viewer) => viewer.setAttribute('controls', ''),
-      viewerHandle
-    );
-    let hasControls = await page.evaluate(
-      (viewer) => viewer.hasAttribute('controls'),
-      viewerHandle
-    );
-    expect(hasControls).toBe(true);
-
-    // remove layer and check that layercontrol disappears
-    await page.evaluateHandle(() =>
-      document.querySelector('map-layer').remove()
-    );
-    let layerControlHidden = await page.getByTestId('layer-control').evaluate((div) => div.hidden);
-    expect(layerControlHidden).toEqual(true);
-  });
-
-  test('Create map without controls', async () => {
-    // remove previously created map
-    await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer').remove()
-    );
-
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.createElement('mapml-viewer')
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lat', 45),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lon', -90),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('zoom', 2),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('width', '600'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('height', '600'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('projection', 'CBMTILE'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => document.body.appendChild(viewer),
-      viewerHandle
-    );
-
-    // no controls should be on the map
-    let zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    let reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    let fullscreenHidden = await page.$eval(
-      '[data-testid="fullscreen-control"]',
-      (div) => div.hidden
-    );
-    let layerControlHidden = await page.$eval(
-      '[data-testid="layer-control"]',
-      (div) => div.hidden
-    );
-    let scaleHidden = await page.$eval(
-      '[data-testid="scale-control"]',
-      (div) => div.hidden
-    );
-    let geolocation = await page.$eval(
-      '[data-testid="locate-control"]',
-      (div) => div.hidden
-    );
-    expect(geolocation).toEqual(true);
-    expect(zoomHidden).toEqual(true);
-    expect(reloadHidden).toEqual(true);
-    expect(fullscreenHidden).toEqual(true);
-    expect(layerControlHidden).toEqual(true);
-    expect(scaleHidden).toEqual(true);
-  });
-
-  test('Adding a layer to a map without controls does not add controls', async () => {
-    const layerHandle = await page.evaluateHandle(() =>
-      document.createElement('map-layer')
-    );
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('label', 'CBMT'),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('src', 'tiles/cbmt/cbmt.mapml'),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => layer.setAttribute('checked', ''),
-      layerHandle
-    );
-    await page.evaluateHandle(
-      (layer) => document.querySelector('mapml-viewer').appendChild(layer),
-      layerHandle
-    );
-
-    // no controls should be on the map
-    let zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    let reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    let fullscreenHidden = await page.$eval(
-      '[data-testid="fullscreen-control"]',
-      (div) => div.hidden
-    );
-    let layerControl = await page.locator('[data-testid="layer-control"]');
-    let scaleHidden = await page.$eval(
-      '[data-testid="scale-control"]',
-      (div) => div.hidden
-    );
-    let geolocation = await page.$eval(
-      '[data-testid="locate-control"]',
-      (div) => div.hidden
-    );
-    expect(geolocation).toEqual(true);
-    expect(zoomHidden).toEqual(true);
-    expect(reloadHidden).toEqual(true);
-    expect(fullscreenHidden).toEqual(true);
-    await expect(layerControl).toBeHidden();
-    expect(scaleHidden).toEqual(true);
-  });
-
-  test('Adding controls to a map which was created without controls', async () => {
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer')
-    );
-    await page.evaluate((viewer) => (viewer.controls = true), viewerHandle);
-
-    // All controls should be visible on the map
-    let zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    let reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    let fullscreenHidden = await page.$eval(
-      '[data-testid="fullscreen-control"]',
-      (div) => div.hidden
-    );
-    await page.waitForTimeout(300);
-    let layerControlHidden = await page.$eval(
-      '[data-testid="layer-control"]',
-      (div) => div.hidden
-    );
-    let scaleHidden = await page.$eval(
-      '[data-testid="scale-control"]',
-      (div) => div.hidden
-    );
-    let geolocation = await page.$eval(
-      '[data-testid="locate-control"]',
-      (div) => div.hidden
-    );
-    expect(geolocation).toEqual(true);
-    expect(zoomHidden).toEqual(false);
-    expect(reloadHidden).toEqual(false);
-    expect(fullscreenHidden).toEqual(false);
-    expect(layerControlHidden).toEqual(false);
-    expect(scaleHidden).toEqual(false);
-
-    // remove map for next test
-    await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer').remove()
-    );
-  });
-
-  // TODO(cross-port): Leaflet-only (.leaflet-top, .leaflet-left, .leaflet-control-zoom) — rewrite against OpenLayers state.
-  test('Creating mapml-viewer with the default size hides the fullscreen control and the controls attribute functions properly', async () => {
-    // Adding map
-    const viewerHandle = await page.evaluateHandle(() =>
-      document.createElement('mapml-viewer')
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lat', 45),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('lon', -90),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('zoom', 2),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('projection', 'CBMTILE'),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => viewer.setAttribute('controls', ''),
-      viewerHandle
-    );
-    await page.evaluateHandle(
-      (viewer) => document.body.appendChild(viewer),
-      viewerHandle
-    );
-
-    let leftControlCount = await page.$eval(
-      '.leaflet-top.leaflet-left',
-      (div) => div.childElementCount
-    );
-    // 3 controls in DOM: zoom, search (always created up-front for
-    // correct DOM ordering but hidden because controlslist does not
-    // contain "search"), and reload. Fullscreen is squeezed out by the
-    // mapSize budget at default size. The search control is opt-in and
-    // hidden by default, so visually only zoom + reload are shown.
-    expect(leftControlCount).toBe(3);
-
-    let zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    let reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    expect(zoomHidden).toEqual(false);
-    expect(reloadHidden).toEqual(false);
-
-    await page.evaluate(
-      (viewer) => viewer.removeAttribute('controls'),
-      viewerHandle
-    );
-    zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    expect(zoomHidden).toEqual(true);
-    expect(reloadHidden).toEqual(true);
-
-    await page.evaluate(
-      (viewer) => viewer.setAttribute('controls', ''),
-      viewerHandle
-    );
-    zoomHidden = await page.$eval(
-      '[data-testid="zoom-control"]',
-      (div) => div.hidden
-    );
-    reloadHidden = await page.$eval(
-      '[data-testid="reload-control"]',
-      (div) => div.hidden
-    );
-    expect(zoomHidden).toEqual(false);
-    expect(reloadHidden).toEqual(false);
-
-    // remove map for next test
-    await page.evaluateHandle(() =>
-      document.querySelector('mapml-viewer').remove()
-    );
-  });
-
-  test.describe('controlslist test', () => {
-    test('map created with controlslist', async () => {
-      // Adding map
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.createElement('mapml-viewer')
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('lat', 45),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('lon', -90),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('zoom', 2),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('width', '600'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('height', '600'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('projection', 'CBMTILE'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('controls', ''),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) =>
-          viewer.setAttribute('controlslist', 'nozoom nofullscreen noscale'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => document.body.appendChild(viewer),
-        viewerHandle
-      );
-
-      // layer, zoom and fullscreen controls should be hidden
-      let zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      let reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      let fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      let layerControlHidden = await page.$eval(
-        '[data-testid="layer-control"]',
-        (div) => div.hidden
-      );
-      let scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      let geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(zoomHidden).toEqual(true);
-      expect(reloadHidden).toEqual(false);
-      expect(fullscreenHidden).toEqual(true);
-      expect(layerControlHidden).toEqual(true);
-      expect(scaleHidden).toEqual(true);
-
-      // Remove controlslist for next test
-      await page.evaluate(
-        (viewer) => viewer.removeAttribute('controlslist'),
-        viewerHandle
-      );
-    });
-
-    test('Adding controlslist using setAttribute and controlsList setter', async () => {
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
-      );
-      await page.evaluate(
-        (viewer) => viewer.setAttribute('controlslist', 'noreload'),
-        viewerHandle
-      );
-      let hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('noreload');
-
-      let zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      let reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      let fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      let layerControlHidden = await page.$eval(
-        '[data-testid="layer-control"]',
-        (div) => div.hidden
-      );
-      let scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      let geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(zoomHidden).toEqual(false);
-      expect(reloadHidden).toEqual(true);
-      expect(fullscreenHidden).toEqual(false);
-      expect(layerControlHidden).toEqual(true);
-      expect(scaleHidden).toEqual(false);
-
-      // controlsList setter
-      await page.evaluate(
-        (viewer) => (viewer.controlsList = 'noreload nozoom'),
-        viewerHandle
-      );
-      hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('noreload nozoom');
-
-      zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      layerControlHidden = await page.$eval(
-        '[data-testid="layer-control"]',
-        (div) => div.hidden
-      );
-      scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(zoomHidden).toEqual(true);
-      expect(reloadHidden).toEqual(true);
-      expect(fullscreenHidden).toEqual(false);
-      expect(layerControlHidden).toEqual(true);
-      expect(scaleHidden).toEqual(false);
-    });
-
-    test('Turning controls off and on to see if controlslist is preserved', async () => {
-      // Turning controls off
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
-      );
-      await page.evaluate(
-        (viewer) => viewer.removeAttribute('controls'),
-        viewerHandle
-      );
-      let hasControls = await page.evaluate(
-        (viewer) => viewer.hasAttribute('controls'),
-        viewerHandle
-      );
-      expect(hasControls).toBe(false);
-
-      let zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      let reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      let fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      let layerControlHidden = await page.$eval(
-        '[data-testid="layer-control"]',
-        (div) => div.hidden
-      );
-      let scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      let geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(zoomHidden).toEqual(true);
-      expect(reloadHidden).toEqual(true);
-      expect(fullscreenHidden).toEqual(true);
-      expect(layerControlHidden).toEqual(true);
-      expect(scaleHidden).toEqual(true);
-
-      // Turning controls on
-      await page.evaluate(
-        (viewer) => viewer.setAttribute('controls', ''),
-        viewerHandle
-      );
-      hasControls = await page.evaluate(
-        (viewer) => viewer.hasAttribute('controls'),
-        viewerHandle
-      );
-      expect(hasControls).toBe(true);
-
-      zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      layerControlHidden = await page.$eval(
-        '[data-testid="layer-control"]',
-        (div) => div.hidden
-      );
-      scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(zoomHidden).toEqual(true);
-      expect(reloadHidden).toEqual(true);
-      expect(fullscreenHidden).toEqual(false);
-      expect(layerControlHidden).toEqual(true);
-      expect(scaleHidden).toEqual(false);
-    });
-    test('controlslist geolocations test', async () => {
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
-      );
-      await page.evaluate(
-        (viewer) => viewer.setAttribute('controlslist', 'geolocation'),
-        viewerHandle
-      );
-      let hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('geolocation');
-
-      let geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(false);
-      //remove geolocation
-      await page.evaluate(
-        (viewer) => (viewer.controlsList = 'noreload'),
-        viewerHandle
-      );
-      hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('noreload');
-
-      let reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      geolocation = await page.$eval(
-        '[data-testid="locate-control"]',
-        (div) => div.hidden
-      );
-      expect(geolocation).toEqual(true);
-      expect(reloadHidden).toEqual(true);
-    });
-    test('controlslist search test', async () => {
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
-      );
-
-      // search control is now always created up-front and hidden by
-      // default (opt-in via controlslist="search"). This ensures it
-      // ends up in its correct DOM slot (between zoom and reload) when
-      // controlslist is set at runtime, instead of being appended after
-      // fullscreen.
-      let searchHiddenInitial = await page.$eval(
-        '[data-testid="search-control"]',
-        (div) => div.hidden
-      );
-      expect(searchHiddenInitial).toEqual(true);
-
-      // enable search via controlslist attribute
-      await page.evaluate(
-        (viewer) => viewer.setAttribute('controlslist', 'search'),
-        viewerHandle
-      );
-      let hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('search');
-
-      let searchHidden = await page.$eval(
-        '[data-testid="search-control"]',
-        (div) => div.hidden
-      );
-      expect(searchHidden).toEqual(false);
-
-      // remove search via controlsList property
-      await page.evaluate(
-        (viewer) => (viewer.controlsList = 'noreload'),
-        viewerHandle
-      );
-      hascontrolslist = await page.evaluate(
-        (viewer) => viewer.getAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hascontrolslist).toEqual('noreload');
-
-      searchHidden = await page.$eval(
-        '[data-testid="search-control"]',
-        (div) => div.hidden
-      );
-      expect(searchHidden).toEqual(true);
-
-      // enable search via controlsList property
-      await page.evaluate(
-        (viewer) => (viewer.controlsList = 'search'),
-        viewerHandle
-      );
-      searchHidden = await page.$eval(
-        '[data-testid="search-control"]',
-        (div) => div.hidden
-      );
-      expect(searchHidden).toEqual(false);
-
-      // controlsList.supports('search') should be true
-      let searchSupported = await page.evaluate(
-        (viewer) => viewer.controlsList.supports('search'),
-        viewerHandle
-      );
-      expect(searchSupported).toBe(true);
-
-      // reset controlslist for next test
-      await page.evaluate(
-        (viewer) => viewer.removeAttribute('controlslist'),
-        viewerHandle
-      );
-    });
-    test('controlslist removeAttribute', async () => {
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer')
-      );
-      // removeAttribute
-      await page.evaluate(
-        (viewer) => viewer.removeAttribute('controlslist'),
-        viewerHandle
-      );
-
-      let hasControlslist = await page.evaluate(
-        (viewer) => viewer.hasAttribute('controlslist'),
-        viewerHandle
-      );
-      expect(hasControlslist).toEqual(false);
-
-      let zoomHidden = await page.$eval(
-        '[data-testid="zoom-control"]',
-        (div) => div.hidden
-      );
-      let reloadHidden = await page.$eval(
-        '[data-testid="reload-control"]',
-        (div) => div.hidden
-      );
-      let fullscreenHidden = await page.$eval(
-        '[data-testid="fullscreen-control"]',
-        (div) => div.hidden
-      );
-      let scaleHidden = await page.$eval(
-        '[data-testid="scale-control"]',
-        (div) => div.hidden
-      );
-      expect(zoomHidden).toEqual(false);
-      expect(reloadHidden).toEqual(false);
-      expect(fullscreenHidden).toEqual(false);
-      expect(scaleHidden).toEqual(false);
-
-      let controlslistDomTokenListLength = await page.evaluate(
-        (viewer) => viewer.controlsList.length,
-        viewerHandle
-      );
-      expect(controlslistDomTokenListLength).toBe(0);
-
-      // remove map for next test
-      await page.evaluateHandle(() =>
-        document.querySelector('mapml-viewer').remove()
-      );
-    });
-
-    test.describe('DomTokenList Methods test', () => {
-      test('using .add(), .replace() and .value() methods of controlsList', async () => {
-        // Adding map
-        const viewerHandle = await page.evaluateHandle(() =>
-          document.createElement('mapml-viewer')
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('lat', 45),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('lon', -90),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('zoom', 2),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('width', '600'),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('height', '600'),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('projection', 'CBMTILE'),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => viewer.setAttribute('controls', ''),
-          viewerHandle
-        );
-        await page.evaluateHandle(
-          (viewer) => document.body.appendChild(viewer),
-          viewerHandle
-        );
-
-        let controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlsListLength).toEqual(0);
-
-        // Testing .value()
-        await page.evaluateHandle(
-          (viewer) => (viewer.controlsList.value = 'nozoom nolayer'),
-          viewerHandle
-        );
-        let controlslistAttribute = await page.evaluate(
-          (viewer) => viewer.getAttribute('controlslist'),
-          viewerHandle
-        );
-        let controlsListValue = await page.evaluate(
-          (viewer) => viewer.controlsList.value,
-          viewerHandle
-        );
-        controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlslistAttribute).toEqual('nozoom nolayer');
-        expect(controlsListValue).toEqual('nozoom nolayer');
-        expect(controlsListLength).toEqual(2);
-
-        // Testing .add()
-        await page.evaluateHandle(
-          (viewer) => viewer.controlsList.add('nofullscreen'),
-          viewerHandle
-        );
-        controlslistAttribute = await page.evaluate(
-          (viewer) => viewer.getAttribute('controlslist'),
-          viewerHandle
-        );
-        controlsListValue = await page.evaluate(
-          (viewer) => viewer.controlsList.value,
-          viewerHandle
-        );
-        controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlslistAttribute).toEqual('nozoom nolayer nofullscreen');
-        expect(controlsListValue).toEqual('nozoom nolayer nofullscreen');
-        expect(controlsListLength).toEqual(3);
-
-        // Testing .replace()
-        await page.evaluateHandle(
-          (viewer) => viewer.controlsList.replace('nolayer', 'noreload'),
-          viewerHandle
-        );
-        controlslistAttribute = await page.evaluate(
-          (viewer) => viewer.getAttribute('controlslist'),
-          viewerHandle
-        );
-        controlsListValue = await page.evaluate(
-          (viewer) => viewer.controlsList.value,
-          viewerHandle
-        );
-        controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlslistAttribute).toEqual('nozoom noreload nofullscreen');
-        expect(controlsListValue).toEqual('nozoom noreload nofullscreen');
-        expect(controlsListLength).toEqual(3);
-
-        // Testing .toggle()
-        await page.evaluateHandle(
-          (viewer) => viewer.controlsList.toggle('nofullscreen'),
-          viewerHandle
-        );
-        controlslistAttribute = await page.evaluate(
-          (viewer) => viewer.getAttribute('controlslist'),
-          viewerHandle
-        );
-        controlsListValue = await page.evaluate(
-          (viewer) => viewer.controlsList.value,
-          viewerHandle
-        );
-        controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlslistAttribute).toEqual('nozoom noreload');
-        expect(controlsListValue).toEqual('nozoom noreload');
-        expect(controlsListLength).toEqual(2);
-      });
-
-      test('using .contains(), .item(), .remove() and .supports() methods of controlsList', async () => {
-        const viewerHandle = await page.evaluateHandle(() =>
-          document.querySelector('mapml-viewer')
-        );
-
-        // Testing .contains()
-        let controlslistContains = await page.evaluate(
-          (viewer) => viewer.controlsList.contains('nozoom'),
-          viewerHandle
-        );
-        expect(controlslistContains).toBe(true);
-        controlslistContains = await page.evaluate(
-          (viewer) => viewer.controlsList.contains('nofullscreen'),
-          viewerHandle
-        );
-        expect(controlslistContains).toBe(false);
-
-        // Testing .item()
-        let controlslistItem = await page.evaluate(
-          (viewer) => viewer.controlsList.item(1),
-          viewerHandle
-        );
-        expect(controlslistItem).toEqual('noreload');
-        controlslistItem = await page.evaluate(
-          (viewer) => viewer.controlsList.item(2),
-          viewerHandle
-        );
-        expect(controlslistItem).toEqual(null);
-
-        // Testing .remove()
-        await page.evaluateHandle(
-          (viewer) => viewer.controlsList.remove('noreload'),
-          viewerHandle
-        );
-        let controlslistAttribute = await page.evaluate(
-          (viewer) => viewer.getAttribute('controlslist'),
-          viewerHandle
-        );
-        let controlsListValue = await page.evaluate(
-          (viewer) => viewer.controlsList.value,
-          viewerHandle
-        );
-        let controlsListLength = await page.evaluate(
-          (viewer) => viewer.controlsList.length,
-          viewerHandle
-        );
-        expect(controlslistAttribute).toEqual('nozoom');
-        expect(controlsListValue).toEqual('nozoom');
-        expect(controlsListLength).toEqual(1);
-
-        // Testing .supports()
-        let controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('noreload'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(true);
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('nofullscreen'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(true);
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('nozoom'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(true);
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('nolayer'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(true);
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('noscale'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(true);
-        // controls which are not yet supported / or invalid
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('nogeolocation'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(false);
-        controlslistSupported = await page.evaluate(
-          (viewer) => viewer.controlsList.supports('nocode'),
-          viewerHandle
-        );
-        expect(controlslistSupported).toBe(false);
-
-        // remove map for next test
-        await page.evaluateHandle(() =>
-          document.querySelector('mapml-viewer').remove()
-        );
-      });
-    });
-
-    test('controls disabled for empty custom projection map', async () => {
-      // Adding custom projection map
-      const viewerHandle = await page.evaluateHandle(() =>
-        document.createElement('mapml-viewer')
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('lat', 45),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('lon', -90),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('zoom', 2),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('width', '600'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('height', '600'),
-        viewerHandle
-      );
-
-      // Adding custom projection
-      const custProj = await page.evaluate((viewer) => {
-        return viewer.defineCustomProjection(template);
-      }, viewerHandle);
-      expect(custProj).toEqual('basic');
-
-      await page.evaluateHandle(
-        (viewer) => viewer.setAttribute('projection', 'basic'),
-        viewerHandle
-      );
-      await page.evaluateHandle(
-        (viewer) => document.body.appendChild(viewer),
-        viewerHandle
-      );
-
-      await page.evaluate((viewer) => {
-        viewer.projection = 'basic';
-      }, viewerHandle);
-
-      // Toggle Controls (T) contextmenu is disabled. The trigger is the absent
-      // `controls` attribute, not the projection: MapML.js's _toggleControls
-      // disables this item whenever controls are off. Selected by data-id
-      // because upstream's positional `button:nth-child(10)` counts the copy
-      // submenu div, which this port parents to the map container instead.
-      let toggleControlsBtn = await page.$eval(
-        '.mapml-contextmenu > button[data-id="toggle-controls"]',
-        (btn) => btn.disabled
-      );
-      expect(toggleControlsBtn).toBe(true);
-    });
-  });
+import { requires } from '../../helpers/capabilities.js';
+import {
+  createViewer,
+  addLayer,
+  expectControls
+} from '../../helpers/viewer.js';
+
+// Per projection: a viewer position whose view the layer's local tiles cover,
+// and that layer.
+const PROJECTIONS = {
+  OSMTILE: {
+    zoom: 1,
+    layer: 'tiles/osmtile/osmtile.mapml',
+    title: 'OpenStreetMap (test tiles)'
+  },
+  CBMTILE: {
+    zoom: 2,
+    layer: 'tiles/cbmt/cbmt.mapml',
+    title: 'Canada Base Map - Transportation (CBMT)'
+  }
+};
+
+// The controls a 600x600 viewer has room for, all shown / all hidden.
+const ALL = ['zoom', 'reload', 'fullscreen', 'layer', 'scale', 'locate'];
+const all = (state) => Object.fromEntries(ALL.map((c) => [c, state]));
+
+let requests;
+let pageErrors;
+test.beforeEach(async ({ page }) => {
+  pageErrors = [];
+  page.on('pageerror', (err) => pageErrors.push(err.message));
+  requests = trackRequests(page);
+  await page.goto('domApi-mapml-viewer.html', { waitUntil: 'networkidle' });
 });
+
+for (const [projection, { zoom, layer, title }] of Object.entries(
+  PROJECTIONS
+)) {
+  // The upstream scenarios, in an order-independent form.
+  const viewer = (page, attrs = {}) =>
+    createViewer(page, {
+      lat: 45,
+      lon: -90,
+      zoom,
+      width: 600,
+      height: 600,
+      projection,
+      ...attrs
+    });
+  const tileLayer = (page, attrs = {}) =>
+    addLayer(page, { label: projection, src: layer, checked: '', ...attrs });
+
+  test.describe(
+    `mapml-viewer DOM API (${projection})`,
+    { tag: `@${projection}` },
+    () => {
+      requires(test, projection);
+
+      test('Create a map viewer with document.createElement(mapml-viewer)', async ({
+        page
+      }) => {
+        const v = await viewer(page, { controls: '' });
+        expect(await v.evaluate((v) => v.nodeName)).toBe('MAPML-VIEWER');
+        expect(await v.evaluate((v) => !!v.shadowRoot)).toBe(true);
+        expect(pageErrors).toEqual([]);
+        // With no layers there is no layer control, despite `controls`.
+        await expectControls(page, { layer: 'hidden' });
+      });
+
+      test('Create a layer with document.createElement(map-layer)', async ({
+        page
+      }) => {
+        await viewer(page, { controls: '' });
+        const blankMap = await settledMapPixels(page);
+        requests.clear();
+
+        const l = await tileLayer(page);
+        expect(await l.evaluate((l) => l.nodeName)).toBe('MAP-LAYER');
+        await expectControls(page, { layer: 'shown' });
+
+        // A hidden layer is left out of the layer control (but stays on the
+        // map), leaving it empty, so it disappears.
+        await l.evaluate((l) => l.setAttribute('hidden', ''));
+        await expectControls(page, { layer: 'hidden' });
+
+        // The layer is active: it went to the network for tiles. Which tiles,
+        // how many, and at what scale is the renderer's business.
+        await expect.poll(() => requests.count(/\.png$/)).toBeGreaterThan(0);
+        // And something was drawn: the middle of the map no longer looks blank.
+        await expect
+          .poll(async () => (await mapPixels(page)).equals(blankMap))
+          .toBe(false);
+        expect(requests.failed).toEqual([]);
+      });
+
+      test('Remove mapml-viewer from DOM, add it back in', async ({ page }) => {
+        const v = await viewer(page, { controls: '' });
+        await tileLayer(page);
+        const paintedMap = await settledMapPixels(page);
+        requests.clear();
+
+        await v.evaluate((v) => {
+          document.body.removeChild(v);
+          document.body.appendChild(v);
+        });
+        await v.evaluate((v) => v.querySelector('map-layer').whenReady());
+        // The label comes from the document's <map-title>, so this reads
+        // right only once the layer has reloaded its document.
+        expect(
+          await v.evaluate((v) => v.querySelector('map-layer').label)
+        ).toEqual(title);
+        expect(pageErrors).toEqual([]);
+
+        // The layer is live again: it re-read its MapML document. The tiles
+        // are not refetched; they are already in the browser cache.
+        await expect.poll(() => requests.count(/\.mapml$/)).toBeGreaterThan(0);
+        // And the map is back to normal: it repainted what it had before.
+        await expect
+          .poll(async () => (await mapPixels(page)).equals(paintedMap))
+          .toBe(true);
+        expect(requests.failed).toEqual([]);
+      });
+
+      test('Toggle all mapml-viewer controls by adding or removing controls attribute', async ({
+        page
+      }) => {
+        const v = await viewer(page, { controls: '' });
+        await tileLayer(page);
+        await expectControls(page, { ...all('shown'), locate: 'hidden' });
+
+        await v.evaluate((v) => v.removeAttribute('controls'));
+        expect(await v.evaluate((v) => v.hasAttribute('controls'))).toBe(false);
+        // ALL the controls displayed on the map should have disappeared
+        await expectControls(page, all('hidden'));
+      });
+
+      test('Removing layer removes layer control', async ({ page }) => {
+        await viewer(page, { controls: '' });
+        const l = await tileLayer(page);
+        await expectControls(page, { layer: 'shown' });
+
+        await l.evaluate((l) => l.remove());
+        await expectControls(page, { layer: 'hidden' });
+      });
+
+      test('Create map without controls', async ({ page }) => {
+        await viewer(page);
+        await expectControls(page, all('hidden'));
+      });
+
+      test('Adding a layer to a map without controls does not add controls', async ({
+        page
+      }) => {
+        await viewer(page);
+        await tileLayer(page);
+        await expectControls(page, all('hidden'));
+      });
+
+      test('Adding controls to a map which was created without controls', async ({
+        page
+      }) => {
+        const v = await viewer(page);
+        await tileLayer(page);
+        await v.evaluate((v) => (v.controls = true));
+        await expectControls(page, { ...all('shown'), locate: 'hidden' });
+      });
+
+      test('Creating mapml-viewer with the default size hides the fullscreen control and the controls attribute functions properly', async ({
+        page
+      }) => {
+        // No width/height: the default 300x150 object size.
+        const v = await createViewer(page, {
+          lat: 45,
+          lon: -90,
+          zoom,
+          projection,
+          controls: ''
+        });
+        // Fullscreen is squeezed out by the size budget at the default size;
+        // zoom and reload fit, and the opt-in search control is not shown.
+        await expectControls(page, {
+          zoom: 'shown',
+          reload: 'shown',
+          fullscreen: 'absent',
+          search: 'hidden'
+        });
+
+        await v.evaluate((v) => v.removeAttribute('controls'));
+        await expectControls(page, { zoom: 'hidden', reload: 'hidden' });
+
+        await v.evaluate((v) => v.setAttribute('controls', ''));
+        await expectControls(page, { zoom: 'shown', reload: 'shown' });
+      });
+
+      test.describe('controlslist', () => {
+        test('map created with controlslist', async ({ page }) => {
+          await viewer(page, {
+            controls: '',
+            controlslist: 'nozoom nofullscreen noscale'
+          });
+          await expectControls(page, {
+            ...all('hidden'),
+            reload: 'shown'
+          });
+        });
+
+        test('Adding controlslist using setAttribute and controlsList setter', async ({
+          page
+        }) => {
+          const v = await viewer(page, { controls: '' });
+
+          await v.evaluate((v) => v.setAttribute('controlslist', 'noreload'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'noreload'
+          );
+          await expectControls(page, {
+            zoom: 'shown',
+            reload: 'hidden',
+            fullscreen: 'shown',
+            layer: 'hidden', // no layers
+            scale: 'shown',
+            locate: 'hidden'
+          });
+
+          await v.evaluate((v) => (v.controlsList = 'noreload nozoom'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'noreload nozoom'
+          );
+          await expectControls(page, {
+            zoom: 'hidden',
+            reload: 'hidden',
+            fullscreen: 'shown',
+            layer: 'hidden',
+            scale: 'shown',
+            locate: 'hidden'
+          });
+        });
+
+        test('Turning controls off and on to see if controlslist is preserved', async ({
+          page
+        }) => {
+          const v = await viewer(page, {
+            controls: '',
+            controlslist: 'noreload nozoom'
+          });
+
+          await v.evaluate((v) => v.removeAttribute('controls'));
+          await expectControls(page, all('hidden'));
+
+          await v.evaluate((v) => v.setAttribute('controls', ''));
+          await expectControls(page, {
+            zoom: 'hidden',
+            reload: 'hidden',
+            fullscreen: 'shown',
+            layer: 'hidden', // no layers
+            scale: 'shown',
+            locate: 'hidden'
+          });
+        });
+
+        test('controlslist geolocation', async ({ page }) => {
+          const v = await viewer(page, { controls: '' });
+
+          await v.evaluate((v) => v.setAttribute('controlslist', 'geolocation'));
+          await expectControls(page, { locate: 'shown' });
+
+          await v.evaluate((v) => (v.controlsList = 'noreload'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'noreload'
+          );
+          await expectControls(page, { locate: 'hidden', reload: 'hidden' });
+
+          // the DOMTokenList methods reflect to the attribute, and show/hide
+          await v.evaluate((v) => v.controlsList.add('geolocation'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'noreload geolocation'
+          );
+          await expectControls(page, { locate: 'shown', reload: 'hidden' });
+          await v.evaluate((v) => v.controlsList.remove('geolocation'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'noreload'
+          );
+          await expectControls(page, { locate: 'hidden' });
+        });
+
+        test('controlslist search', async ({ page }) => {
+          const v = await viewer(page, { controls: '' });
+          // Search is opt-in: hidden until controlslist asks for it.
+          await expectControls(page, { search: 'hidden' });
+
+          await v.evaluate((v) => v.setAttribute('controlslist', 'search'));
+          await expectControls(page, { search: 'shown' });
+
+          await v.evaluate((v) => (v.controlsList = 'noreload'));
+          await expectControls(page, { search: 'hidden' });
+
+          await v.evaluate((v) => (v.controlsList = 'search'));
+          await expectControls(page, { search: 'shown' });
+          expect(await v.evaluate((v) => v.controlsList.supports('search'))).toBe(
+            true
+          );
+
+          // the DOMTokenList methods reflect to the attribute, and show/hide
+          await v.evaluate((v) => v.controlsList.remove('search'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            ''
+          );
+          await expectControls(page, { search: 'hidden' });
+          await v.evaluate((v) => v.controlsList.add('search'));
+          expect(await v.evaluate((v) => v.getAttribute('controlslist'))).toBe(
+            'search'
+          );
+          await expectControls(page, { search: 'shown' });
+        });
+
+        test('controlslist removeAttribute', async ({ page }) => {
+          const v = await viewer(page, {
+            controls: '',
+            controlslist: 'noreload nozoom'
+          });
+          await expectControls(page, { zoom: 'hidden', reload: 'hidden' });
+
+          await v.evaluate((v) => v.removeAttribute('controlslist'));
+          expect(await v.evaluate((v) => v.hasAttribute('controlslist'))).toBe(
+            false
+          );
+          await expectControls(page, {
+            zoom: 'shown',
+            reload: 'shown',
+            fullscreen: 'shown',
+            scale: 'shown'
+          });
+          expect(await v.evaluate((v) => v.controlsList.length)).toBe(0);
+        });
+
+        test('controlsList .value, .add(), .replace() and .toggle()', async ({
+          page
+        }) => {
+          const v = await viewer(page, { controls: '' });
+          const list = () =>
+            v.evaluate((v) => ({
+              attribute: v.getAttribute('controlslist'),
+              value: v.controlsList.value,
+              length: v.controlsList.length
+            }));
+          expect((await list()).length).toBe(0);
+
+          await v.evaluate((v) => (v.controlsList.value = 'nozoom nolayer'));
+          expect(await list()).toEqual({
+            attribute: 'nozoom nolayer',
+            value: 'nozoom nolayer',
+            length: 2
+          });
+
+          await v.evaluate((v) => v.controlsList.add('nofullscreen'));
+          expect(await list()).toEqual({
+            attribute: 'nozoom nolayer nofullscreen',
+            value: 'nozoom nolayer nofullscreen',
+            length: 3
+          });
+
+          await v.evaluate((v) => v.controlsList.replace('nolayer', 'noreload'));
+          expect(await list()).toEqual({
+            attribute: 'nozoom noreload nofullscreen',
+            value: 'nozoom noreload nofullscreen',
+            length: 3
+          });
+
+          await v.evaluate((v) => v.controlsList.toggle('nofullscreen'));
+          expect(await list()).toEqual({
+            attribute: 'nozoom noreload',
+            value: 'nozoom noreload',
+            length: 2
+          });
+        });
+
+        test('controlsList .contains(), .item(), .remove() and .supports()', async ({
+          page
+        }) => {
+          const v = await viewer(page, {
+            controls: '',
+            controlslist: 'nozoom noreload'
+          });
+          const call = (method, ...args) =>
+            v.evaluate(
+              (v, [method, args]) => v.controlsList[method](...args),
+              [method, args]
+            );
+
+          expect(await call('contains', 'nozoom')).toBe(true);
+          expect(await call('contains', 'nofullscreen')).toBe(false);
+
+          expect(await call('item', 1)).toBe('noreload');
+          expect(await call('item', 2)).toBe(null);
+
+          await call('remove', 'noreload');
+          expect(
+            await v.evaluate((v) => ({
+              attribute: v.getAttribute('controlslist'),
+              value: v.controlsList.value,
+              length: v.controlsList.length
+            }))
+          ).toEqual({ attribute: 'nozoom', value: 'nozoom', length: 1 });
+
+          for (const token of [
+            'noreload',
+            'nofullscreen',
+            'nozoom',
+            'nolayer',
+            'noscale'
+          ]) {
+            expect(await call('supports', token), token).toBe(true);
+          }
+          // not supported, or invalid
+          for (const token of ['nogeolocation', 'nocode']) {
+            expect(await call('supports', token), token).toBe(false);
+          }
+        });
+      });
+    }
+  );
+}
+
+test.describe(
+  'mapml-viewer DOM API (custom projection)',
+  { tag: '@custom-projection' },
+  () => {
+    requires(test, 'custom-projection');
+
+    test('controls disabled for empty custom projection map', async ({
+      page
+    }) => {
+      const projection = await page.evaluate(async () => {
+        const viewer = document.createElement('mapml-viewer');
+        for (const [name, value] of Object.entries({
+          lat: 45,
+          lon: -90,
+          zoom: 2,
+          width: 600,
+          height: 600
+        })) {
+          viewer.setAttribute(name, value);
+        }
+        // `template` is defined by the fixture page
+        const name = viewer.defineCustomProjection(template);
+        viewer.setAttribute('projection', 'basic');
+        document.body.appendChild(viewer);
+        viewer.projection = 'basic';
+        await viewer.whenReady();
+        return name;
+      });
+      expect(projection).toBe('basic');
+
+      // The map has no `controls` attribute, so its context menu's Toggle
+      // Controls (T) item is disabled. (MapML.js's _toggleControls disables
+      // it whenever controls are off; the projection is incidental.)
+      await expect(
+        page.locator('.mapml-contextmenu > button[data-id="toggle-controls"]')
+      ).toBeDisabled();
+    });
+  }
+);

@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 0 converted, 0 in progress, 132 not started, of 132.
+Specs: 1 converted, 0 in progress, 131 not started, of 132.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -16,7 +16,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | Spec | Status | MapML.js | MapML-OpenLayers | MapML-MapLibre | Notes |
 |---|---|---|---|---|---|
 | api/domApi-HTMLLayerElement.test.js | not-started |  |  |  |  |
-| api/domApi-mapml-viewer.test.js | not-started |  |  |  |  |
+| api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 6✓ 11✗ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test. MapML-MapLibre fails the controls tests: it removes controls instead of hiding them and has no size budget (CONTRACT.md, Control lifecycle). |
 | api/domApi-web-map.test.js | not-started |  |  |  |  |
 | api/events/map-change-event-leaflet.test.js | not-started |  |  |  |  |
 | api/events/map-projectionchange.test.js | not-started |  |  |  |  |
@@ -229,14 +229,14 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-MapLibre port-specific tests
 
-69 pending, 0 deleted, 0 kept, of 69.
+68 pending, 1 deleted, 0 kept, of 69.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
 | tests/announce-movement.spec.ts | pending |  |
 | tests/attribution.spec.ts | pending |  |
 | tests/context-menu.spec.ts | pending |  |
-| tests/controls-list.spec.ts | pending |  |
+| tests/controls-list.spec.ts | deleted | api/domApi-mapml-viewer.test.js |
 | tests/crosshair.spec.ts | pending |  |
 | tests/disabled-layers.spec.ts | pending |  |
 | tests/disabled-out-of-view.spec.ts | pending |  |

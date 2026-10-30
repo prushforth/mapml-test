@@ -14,7 +14,39 @@
       "status": "not-started"
     },
     "api/domApi-mapml-viewer.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 35,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@65d514f",
+          "date": "2026-10-30"
+        },
+        "MapML-OpenLayers": {
+          "passed": 35,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@bb499ef",
+          "date": "2026-10-30"
+        },
+        "MapML-MapLibre": {
+          "passed": 6,
+          "failed": 11,
+          "flaky": 0,
+          "skipped": 18,
+          "build": "cross-port-tests@22bbc38+dirty",
+          "date": "2026-10-30"
+        }
+      },
+      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test. MapML-MapLibre fails the controls tests: it removes controls instead of hiding them and has no size budget (CONTRACT.md, Control lifecycle).",
+      "supersedes": {
+        "MapML-MapLibre": [
+          "tests/controls-list.spec.ts"
+        ]
+      }
     },
     "api/domApi-web-map.test.js": {
       "status": "not-started"
@@ -637,7 +669,8 @@
         "status": "pending"
       },
       "tests/controls-list.spec.ts": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "api/domApi-mapml-viewer.test.js"
       },
       "tests/crosshair.spec.ts": {
         "status": "pending"
