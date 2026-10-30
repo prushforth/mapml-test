@@ -1,6 +1,17 @@
 import { test, expect, chromium } from '@playwright/test';
 import data from './mapFeature.data.js';
 
+// GeoJSON coordinates are produced by proj4's inverse projection, whose
+// transcendental math varies in the last ulp or two between browser/V8
+// versions. Round every number to 9 decimal places (sub-millimetre for
+// degrees) so the structure can still be compared with deep equality.
+const roundCoordinates = (value) =>
+  JSON.parse(
+    JSON.stringify(value, (key, v) =>
+      typeof v === 'number' && Number.isFinite(v) ? Number(v.toFixed(9)) : v
+    )
+  );
+
 test.describe('Playwright MapFeature Custom Element Tests', () => {
   let page;
   let context;
@@ -134,13 +145,17 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     let geojson = await page.$eval('body > map', (map) =>
       map.querySelector('map-feature').mapml2geojson()
     );
-    expect(geojson).toEqual(data.geojsonData.withDefOptions);
+    expect(roundCoordinates(geojson)).toEqual(
+      roundCoordinates(data.geojsonData.withDefOptions)
+    );
 
     // options = {propertyFunction: null, transform: false}
     geojson = await page.$eval('body > map', (map) =>
       map.querySelector('map-feature').mapml2geojson({ transform: false })
     );
-    expect(geojson).toEqual(data.geojsonData.withNoTransform);
+    expect(roundCoordinates(geojson)).toEqual(
+      roundCoordinates(data.geojsonData.withNoTransform)
+    );
 
     // options = {propertyFunction: function (properties) {...}, transform: true}
     geojson = await page.$eval('body > map', (map) => {
@@ -162,7 +177,9 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
         }
       });
     });
-    expect(geojson).toEqual(data.geojsonData.withPropertyFunc);
+    expect(roundCoordinates(geojson)).toEqual(
+      roundCoordinates(data.geojsonData.withPropertyFunc)
+    );
   });
 
   test('Get geojson representation of <map-geometry> with multiple geometries', async () => {
@@ -170,7 +187,9 @@ test.describe('Playwright MapFeature Custom Element Tests', () => {
     let geojson = await page.$eval('body > map', (map) =>
       map.querySelector('.link').mapml2geojson()
     );
-    expect(geojson).toEqual(data.geojsonData.withMultiGeo);
+    expect(roundCoordinates(geojson)).toEqual(
+      roundCoordinates(data.geojsonData.withMultiGeo)
+    );
   });
 
   // TODO(cross-port): Leaflet-only (.leaflet-pane, .leaflet-map-pane, .leaflet-overlay-pane) — rewrite against OpenLayers state.
