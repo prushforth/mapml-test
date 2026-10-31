@@ -53,8 +53,13 @@ export const CONTROLS = {
 };
 
 /**
- * The state of the named controls: 'shown', 'hidden' (the contract's `hidden`
- * attribute) or 'absent' (no element; e.g. no room for it).
+ * The state of the named controls, as a user would see them: 'shown' (visible),
+ * 'hidden' (present but not visible) or 'absent' (no element, e.g. no room for
+ * it). Visibility is Playwright's: a non-empty box and not `visibility:hidden`,
+ * the same check as upstream's `toBeHidden()`. It is deliberately not any one
+ * attribute: MapML.js, for one, hides a control by setting `hidden` on it and
+ * on its children, and can leave the container without `hidden` while the
+ * control is still invisible (docs/PLAN.md, D9).
  */
 export async function controlState(page, names) {
   const state = {};
@@ -63,11 +68,7 @@ export async function controlState(page, names) {
     const count = await control.count();
     if (count > 1) state[name] = `duplicated (${count})`;
     else if (count === 0) state[name] = 'absent';
-    else {
-      state[name] = await control
-        .evaluate((el) => (el.hidden ? 'hidden' : 'shown'))
-        .catch(() => 'absent');
-    }
+    else state[name] = (await control.isVisible()) ? 'shown' : 'hidden';
   }
   return state;
 }

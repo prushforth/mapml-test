@@ -6,7 +6,7 @@ which are sibling checkouts on their `cross-port-tests` branches.
 
 Before changing anything, read and follow:
 
-- [docs/PLAN.md](../docs/PLAN.md): the plan of record. Its decisions (D1–D8)
+- [docs/PLAN.md](../docs/PLAN.md): the plan of record. Its decisions (D1–D9)
   and the per-spec routine are canon.
 - [docs/CONTRACT.md](../docs/CONTRACT.md): what specs may rely on. Never
   assert on renderer internals or renderer-specific DOM.

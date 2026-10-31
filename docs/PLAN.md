@@ -165,17 +165,41 @@ tiles under `test/e2e/data/tiles`), never synthesised, so a failing run's
 screenshot is readable. Add data (e.g. OSMTILE tiles at more zoom levels) when
 a conversion needs it.
 
+### D9. A failing test is suspect before the implementation is
+
+MapML.js is the reference, and upstream's own spec passes against it. So when
+a converted spec fails on MapML.js, the conversion is presumed wrong: it has
+asserted something other than what upstream asserted (e.g. reading an
+attribute where upstream checked visibility), or set the scenario up
+differently. The same suspicion applies to failures on the other
+implementations whenever MapML.js and they disagree with upstream's intent.
+
+An implementation's source is changed only on evidence of misbehaviour that a
+user or author would see: reproduce it outside the converted spec (a probe
+page, a screenshot, upstream's original assertion), against a build without
+the proposed change, and say what was observed in the commit message.
+Contract additions (testids, data-ids, a missing public method) are the
+exception: they add a way to observe, they don't change behaviour.
+
+Why: an unfounded "fix" makes a wrong test pass and bakes the wrong
+assumption into the implementation; later conversions then fail against
+behaviour that was correct all along. (This happened once already: a helper
+read a container's `hidden` attribute instead of the control's visibility, and
+a MapML.js layer-control change was made, then reverted.)
+
 ## The routine for each spec
 
 1. Mark it `in-progress` in `porting.json`.
 2. Run it on all three: `node scripts/run.mjs all --no-copy -- test/e2e/<spec>`.
-3. Sort every failure into one of:
+3. Sort every failure into one of (D9: on MapML.js, check the conversion
+   first):
+   - **the conversion asserts something upstream didn't** → fix the test;
    - **test depends on one renderer** → rewrite it against the contract (D2);
    - **an implementation lacks part of the contract** → add it to
      [CONTRACT.md](CONTRACT.md) if it's new, and implement it on that
      implementation's `cross-port-tests` branch;
-   - **a real bug in an implementation** → fix it there, or `test.fixme` it
-     with a comment linking the issue;
+   - **a real bug in an implementation**, reproduced outside the spec (D9) →
+     fix it there, or `test.fixme` it with a comment linking the issue;
    - **an implementation can't do it at all** → tag it and use `requires()`
      (D3).
 4. Make the tests independent (D4) and parameterise over projections where it

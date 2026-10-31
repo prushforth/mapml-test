@@ -21,8 +21,8 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@65d514f",
-          "date": "2026-10-30"
+          "build": "cross-port-tests@6bd06e0",
+          "date": "2026-10-31"
         },
         "MapML-OpenLayers": {
           "passed": 35,
@@ -30,15 +30,15 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@bb499ef",
-          "date": "2026-10-30"
+          "date": "2026-10-31"
         },
         "MapML-MapLibre": {
           "passed": 6,
           "failed": 11,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@22bbc38+dirty",
-          "date": "2026-10-30"
+          "build": "cross-port-tests@42de34e",
+          "date": "2026-10-31"
         }
       },
       "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test. MapML-MapLibre fails the controls tests: it removes controls instead of hiding them and has no size budget (CONTRACT.md, Control lifecycle).",

@@ -112,7 +112,7 @@ MAPML_IMPL=ol npx playwright test test/e2e/core/mapElement.test.js:38 --debug
 ## Conventions
 
 The rules for writing and converting specs are in
-[docs/PLAN.md](docs/PLAN.md) (decisions D1 to D8) and
+[docs/PLAN.md](docs/PLAN.md) (decisions D1 to D9) and
 [docs/CONTRACT.md](docs/CONTRACT.md). In brief:
 
 - Assert through the contract and public API, never through one renderer's

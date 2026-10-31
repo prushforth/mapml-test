@@ -11,8 +11,11 @@ that implements it in every implementation, committed as
 
 ## Controls: `data-testid`
 
-Each control's outermost element carries a `data-testid`. It is the element
-whose `hidden` attribute reflects the control's visibility.
+Each control's outermost element carries a `data-testid`. Specs judge a
+control by whether it is **visible** (Playwright's visibility: a non-empty box,
+not `visibility: hidden`), never by a particular attribute; see
+`controlState` in [test/helpers/viewer.js](../test/helpers/viewer.js). How an
+implementation hides a control is its own business.
 
 | `data-testid`           | Control                                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------------------------- |
@@ -37,9 +40,12 @@ As in MapML.js (`_createControls`, `_toggleControls`):
   space available: at the default 300×150 size there is room for zoom and
   reload, but not fullscreen. `controls`, `controlslist` and layer changes
   never create or remove a control.
-- `controls` and `controlslist` only show or hide controls, by setting or
-  removing the `hidden` attribute on the control element **and on each of its
-  children**.
+- `controls` and `controlslist` only show or hide controls. (MapML.js does
+  it by setting `hidden` on the control element and on each of its children.
+  Its layer control also sets `hidden` on the element alone while it has no
+  layers, and clears it when a layer arrives even if controls are off; the
+  control stays invisible because its children are still hidden. Hence
+  "judge by visibility".)
 - The layer control is hidden while it has no layers to list, even when
   `controls` is on.
 
