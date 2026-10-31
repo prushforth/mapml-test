@@ -16,7 +16,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | Spec | Status | MapML.js | MapML-OpenLayers | MapML-MapLibre | Notes |
 |---|---|---|---|---|---|
 | api/domApi-HTMLLayerElement.test.js | not-started |  |  |  |  |
-| api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 6✓ 11✗ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test. MapML-MapLibre fails the controls tests: it removes controls instead of hiding them and has no size budget (CONTRACT.md, Control lifecycle). |
+| api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). |
 | api/domApi-web-map.test.js | not-started |  |  |  |  |
 | api/events/map-change-event-leaflet.test.js | not-started |  |  |  |  |
 | api/events/map-projectionchange.test.js | not-started |  |  |  |  |

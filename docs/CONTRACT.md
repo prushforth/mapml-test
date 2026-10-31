@@ -32,6 +32,15 @@ implementation hides a control is its own business.
 | `attribution-control`   | attribution                                                                                        |
 | `feature-index-control` | feature index overlay toggle (opt-in: `controlslist="featureindex"`; MapML.js has no such control) |
 
+### Default object size
+
+A `<mapml-viewer>` with no `width`/`height` attributes and no author CSS size
+is 300×150 CSS px (`display: inline-block`, `contain: layout size`, with a
+2px inset border that `frameborder="0"` removes), like `<canvas>` or
+`<iframe>`. `<map is="web-map">` likewise. The control size budget below
+depends on it. Fixtures that want a full-window map must therefore say so in
+both dimensions (`width: 100%` as well as `height`).
+
 ### Control lifecycle
 
 As in MapML.js (`_createControls`, `_toggleControls`):
@@ -49,11 +58,11 @@ As in MapML.js (`_createControls`, `_toggleControls`):
 - The layer control is hidden while it has no layers to list, even when
   `controls` is on.
 
-| Implementation   | Conforms?                                                                                                                                                    |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| MapML.js         | yes (the reference)                                                                                                                                          |
-| MapML-OpenLayers | yes                                                                                                                                                          |
-| MapML-MapLibre   | **no**: turning `controls` off removes the controls instead of hiding them, and controls are created according to `controlslist` rather than the size budget |
+| Implementation   | Conforms?                                                                                                                                             |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MapML.js         | yes (the reference)                                                                                                                                   |
+| MapML-OpenLayers | yes                                                                                                                                                   |
+| MapML-MapLibre   | yes, since its `cross-port: api/domApi-mapml-viewer` commit (it used to remove and re-create controls, and had no size budget or default object size) |
 
 ## Context menus: `data-id`
 

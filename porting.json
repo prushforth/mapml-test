@@ -33,15 +33,15 @@
           "date": "2026-10-31"
         },
         "MapML-MapLibre": {
-          "passed": 6,
-          "failed": 11,
+          "passed": 17,
+          "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@42de34e",
+          "build": "cross-port-tests@c9d3735",
           "date": "2026-10-31"
         }
       },
-      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test. MapML-MapLibre fails the controls tests: it removes controls instead of hiding them and has no size budget (CONTRACT.md, Control lifecycle).",
+      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md).",
       "supersedes": {
         "MapML-MapLibre": [
           "tests/controls-list.spec.ts"
