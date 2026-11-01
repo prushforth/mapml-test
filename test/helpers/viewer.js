@@ -3,38 +3,65 @@
 // its own setup (docs/PLAN.md, D4).
 import { expect } from '@playwright/test';
 
+// The viewer elements a spec can build: how to create each one, and how to
+// find it again. `<map is="web-map">` is a customized built-in, so it is
+// created with `{ is }` and also given the `is` attribute, as upstream does,
+// which is what its selector matches.
+export const VIEWERS = {
+  'mapml-viewer': { selector: 'mapml-viewer', nodeName: 'MAPML-VIEWER' },
+  'web-map': { selector: 'map[is="web-map"]', nodeName: 'MAP' }
+};
+// Matches whichever viewer the page has.
+export const ANY_VIEWER = Object.values(VIEWERS)
+  .map((v) => v.selector)
+  .join(', ');
+
 /**
- * Create a <mapml-viewer> with document.createElement, set `attrs` in order,
- * append it to <body> and wait until it is ready. Returns its locator.
+ * Create a viewer (`<mapml-viewer>`, or `<map is="web-map">` when `is` is
+ * 'web-map') with document.createElement, set `attrs` in order, append it to
+ * <body> and wait until it is ready. Returns its locator.
  */
-export async function createViewer(page, attrs = {}) {
-  await page.evaluate(async (attrs) => {
-    const viewer = document.createElement('mapml-viewer');
-    for (const [name, value] of Object.entries(attrs)) {
-      viewer.setAttribute(name, value);
-    }
-    document.body.appendChild(viewer);
-    await viewer.whenReady();
-  }, attrs);
-  return page.locator('mapml-viewer');
+export async function createViewer(
+  page,
+  attrs = {},
+  { is = 'mapml-viewer' } = {}
+) {
+  await page.evaluate(
+    async ({ attrs, is }) => {
+      let viewer;
+      if (is === 'web-map') {
+        viewer = document.createElement('map', { is });
+        viewer.setAttribute('is', is);
+      } else {
+        viewer = document.createElement(is);
+      }
+      for (const [name, value] of Object.entries(attrs)) {
+        viewer.setAttribute(name, value);
+      }
+      document.body.appendChild(viewer);
+      await viewer.whenReady();
+    },
+    { attrs, is }
+  );
+  return page.locator(VIEWERS[is].selector);
 }
 
 /**
  * Create a <map-layer> with document.createElement, set `attrs` in order and
- * append it to the (only) <mapml-viewer>. Waits for it to be ready unless
+ * append it to the (only) viewer. Waits for it to be ready unless
  * `wait` is false.
  */
 export async function addLayer(page, attrs = {}, { wait = true } = {}) {
   await page.evaluate(
-    async ({ attrs, wait }) => {
+    async ({ attrs, wait, viewer }) => {
       const layer = document.createElement('map-layer');
       for (const [name, value] of Object.entries(attrs)) {
         layer.setAttribute(name, value);
       }
-      document.querySelector('mapml-viewer').appendChild(layer);
+      document.querySelector(viewer).appendChild(layer);
       if (wait) await layer.whenReady();
     },
-    { attrs, wait }
+    { attrs, wait, viewer: ANY_VIEWER }
   );
   return page.locator('map-layer');
 }

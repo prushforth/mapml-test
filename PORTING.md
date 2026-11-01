@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 1 converted, 0 in progress, 131 not started, of 132.
+Specs: 2 converted, 0 in progress, 130 not started, of 132.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -16,8 +16,8 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | Spec | Status | MapML.js | MapML-OpenLayers | MapML-MapLibre | Notes |
 |---|---|---|---|---|---|
 | api/domApi-HTMLLayerElement.test.js | not-started |  |  |  |  |
-| api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). |
-| api/domApi-web-map.test.js | not-started |  |  |  |  |
+| api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). Scenarios shared with domApi-web-map.test.js via test/e2e/api/general/domApi.js. |
+| api/domApi-web-map.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | The <map is="web-map"> run of the domApi-mapml-viewer scenarios: both specs call test/e2e/api/general/domApi.js with their element, so they run the same tests (OSMTILE, @CBMTILE, @custom-projection). Upstream asserted the map's childElementCount (an implementation detail); this checks the element upgraded instead. MapML-OpenLayers test/web-map.test.js and MapML-MapLibre tests/web-map.spec.ts stay pending: they also cover sizing, map-caption and light-DOM hiding, which belong to the web-map/ specs. |
 | api/events/map-change-event-leaflet.test.js | not-started |  |  |  |  |
 | api/events/map-projectionchange.test.js | not-started |  |  |  |  |
 | api/locateApi.test.js | not-started |  |  |  |  |

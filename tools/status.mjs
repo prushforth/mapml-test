@@ -72,12 +72,15 @@ function sync(m) {
   }
 }
 
-// Per-file results of one Playwright JSON report.
+// Per-file results of one Playwright JSON report. A test is counted against
+// the spec file that ran it (the report's root suite), not `spec.file`, which
+// names the file that declared it: a shared scenario module such as
+// api/general/domApi.js or layers/general/isVisible.js.
 function resultsByFile(report) {
   const files = {};
-  const visit = (suite) => {
+  const visit = (suite, file) => {
     for (const spec of suite.specs ?? []) {
-      const r = (files[spec.file] ??= {
+      const r = (files[file] ??= {
         passed: 0,
         failed: 0,
         flaky: 0,
@@ -90,9 +93,9 @@ function resultsByFile(report) {
         else r.skipped++;
       }
     }
-    (suite.suites ?? []).forEach(visit);
+    (suite.suites ?? []).forEach((child) => visit(child, file));
   };
-  (report.suites ?? []).forEach(visit);
+  (report.suites ?? []).forEach((root) => visit(root, root.file));
   return files;
 }
 

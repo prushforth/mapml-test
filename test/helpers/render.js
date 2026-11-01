@@ -11,6 +11,7 @@
 // The tiles are the real ones under e2e/data/tiles, so a failing run's
 // screenshot still looks like a map.
 import { expect } from '@playwright/test';
+import { ANY_VIEWER } from './viewer.js';
 
 /** Record every layer resource response. Install before any layer is added. */
 export function trackRequests(page, match = /\.(png|jpe?g|webp|mapml)(\?|$)/) {
@@ -37,7 +38,7 @@ export function trackRequests(page, match = /\.(png|jpe?g|webp|mapml)(\?|$)/) {
  * buffer to compare against another call. Not a snapshot assertion: the ports
  * never agree pixel for pixel, only on whether anything was drawn at all.
  */
-export async function mapPixels(page, selector = 'mapml-viewer', size = 200) {
+export async function mapPixels(page, selector = ANY_VIEWER, size = 200) {
   const box = await page.locator(selector).boundingBox();
   return page.screenshot({
     clip: {

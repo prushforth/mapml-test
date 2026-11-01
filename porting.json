@@ -22,7 +22,7 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@6bd06e0",
-          "date": "2026-10-31"
+          "date": "2026-11-01"
         },
         "MapML-OpenLayers": {
           "passed": 35,
@@ -30,7 +30,7 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@bb499ef",
-          "date": "2026-10-31"
+          "date": "2026-11-01"
         },
         "MapML-MapLibre": {
           "passed": 17,
@@ -38,10 +38,10 @@
           "flaky": 0,
           "skipped": 18,
           "build": "cross-port-tests@c9d3735",
-          "date": "2026-10-31"
+          "date": "2026-11-01"
         }
       },
-      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md).",
+      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). Scenarios shared with domApi-web-map.test.js via test/e2e/api/general/domApi.js.",
       "supersedes": {
         "MapML-MapLibre": [
           "tests/controls-list.spec.ts"
@@ -49,7 +49,34 @@
       }
     },
     "api/domApi-web-map.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "notes": "The <map is=\"web-map\"> run of the domApi-mapml-viewer scenarios: both specs call test/e2e/api/general/domApi.js with their element, so they run the same tests (OSMTILE, @CBMTILE, @custom-projection). Upstream asserted the map's childElementCount (an implementation detail); this checks the element upgraded instead. MapML-OpenLayers test/web-map.test.js and MapML-MapLibre tests/web-map.spec.ts stay pending: they also cover sizing, map-caption and light-DOM hiding, which belong to the web-map/ specs.",
+      "results": {
+        "MapML.js": {
+          "passed": 35,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@6bd06e0",
+          "date": "2026-11-01"
+        },
+        "MapML-OpenLayers": {
+          "passed": 35,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@bb499ef",
+          "date": "2026-11-01"
+        },
+        "MapML-MapLibre": {
+          "passed": 17,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 18,
+          "build": "cross-port-tests@c9d3735",
+          "date": "2026-11-01"
+        }
+      }
     },
     "api/events/map-change-event-leaflet.test.js": {
       "status": "not-started"
