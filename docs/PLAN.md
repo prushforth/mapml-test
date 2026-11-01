@@ -212,7 +212,8 @@ a MapML.js layer-control change was made, then reverted.)
 7. Mark the spec `converted`, with notes on anything skipped or left to fix.
 8. Run the spec unfiltered on all three, so `porting.json` and `PORTING.md`
    record its results (`run.mjs` updates them after every unfiltered run).
-9. Commit in each touched repo with `cross-port: <spec path>`.
+9. Commit in each touched repo with `cross-port: <spec path>`, after asking:
+   an AI agent never commits, in any repo of the workspace, without approval.
 
 ## Order of work
 

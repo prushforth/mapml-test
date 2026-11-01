@@ -15,3 +15,10 @@ Before changing anything, read and follow:
 
 Running: `node scripts/run.mjs <impl|all> [--no-build|--no-copy] [-- <playwright args>]`
 (see [README.md](../README.md)).
+
+## Commits
+
+Ask before making any commit, in this repository and in every repository of
+the workspace (MapML.js, MapML-OpenLayers, MapML-MapLibre, ...). That includes
+step 9 of the per-spec routine in [docs/PLAN.md](../docs/PLAN.md): prepare the
+changes and the commit messages, then wait for approval before committing.

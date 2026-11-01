@@ -72,8 +72,9 @@
      </noscript> 
   </head>
   <body>
-    <mapml-viewer projection="CBMTILE" zoom="2" lat="45" lon="-90" controls controlslist = "geolocation">
-      <map-layer label="CBMT" src="tiles/cbmt/cbmt.mapml" checked></map-layer>
-    </mapml-viewer>
+    <!-- locateApi.test.js creates the viewer in each projection it runs in:
+         <mapml-viewer projection="..." zoom="..." lat="45" lon="-90" controls controlslist="geolocation">
+           <map-layer label="..." src="tiles/.../....mapml" checked></map-layer>
+         </mapml-viewer> -->
   </body>
 </html>

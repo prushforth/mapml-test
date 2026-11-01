@@ -21,7 +21,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@6bd06e0",
+          "build": "cross-port-tests@cfb13b7+dirty",
           "date": "2026-11-01"
         },
         "MapML-OpenLayers": {
@@ -29,7 +29,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef",
+          "build": "cross-port-tests@bb499ef+dirty",
           "date": "2026-11-01"
         },
         "MapML-MapLibre": {
@@ -37,7 +37,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c9d3735",
+          "build": "cross-port-tests@c9d3735+dirty",
           "date": "2026-11-01"
         }
       },
@@ -57,7 +57,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@6bd06e0",
+          "build": "cross-port-tests@cfb13b7+dirty",
           "date": "2026-11-01"
         },
         "MapML-OpenLayers": {
@@ -65,7 +65,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef",
+          "build": "cross-port-tests@bb499ef+dirty",
           "date": "2026-11-01"
         },
         "MapML-MapLibre": {
@@ -73,7 +73,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c9d3735",
+          "build": "cross-port-tests@c9d3735+dirty",
           "date": "2026-11-01"
         }
       }
@@ -85,7 +85,39 @@
       "status": "not-started"
     },
     "api/locateApi.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 8,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@cfb13b7+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-OpenLayers": {
+          "passed": 8,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@bb499ef+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-MapLibre": {
+          "passed": 4,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 4,
+          "build": "cross-port-tests@c9d3735+dirty",
+          "date": "2026-11-01"
+        }
+      },
+      "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE); MapML-MapLibre skips the CBMTILE run. Each test builds its own viewer; the locate button is found through the locate-control testid instead of its English title; locate() results are polled for instead of read straight away / after waitForTimeout. The OSMTILE run uses tiles/osmtile/osmtile-z18.mapml: the map's zoom range is its layers', so locate()'s zoom 16 needs a layer that reaches it (as upstream's cbmt.mapml, 0-17, does). Upstream's locationerror test dispatched the event itself, testing no implementation; it now withdraws the geolocation permission so locate() really fails. The button test also checks that locate() turns location tracking off, as MapML.js does (GeolocationButton.stop()). MapML-MapLibre's locate() left tracking on and was changed to stop it; MapML-OpenLayers and MapML-MapLibre were changed to limit the map's zoom range to their layers' as MapML.js does (setMapMinAndMaxZoom), which no converted spec asserts yet. MapML-OpenLayers test/locate.test.js stays pending: its button tests belong to mapml-viewer/locateButton.test.js.",
+      "supersedes": {
+        "MapML-MapLibre": [
+          "tests/locate-api.spec.ts"
+        ]
+      }
     },
     "api/matchMedia/combined-matchMedia.test.js": {
       "status": "not-started"
@@ -751,7 +783,8 @@
         "status": "pending"
       },
       "tests/locate-api.spec.ts": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "api/locateApi.test.js"
       },
       "tests/locate-button.spec.ts": {
         "status": "pending"
