@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 4 converted, 0 in progress, 129 not started, of 133.
+Specs: 5 converted, 0 in progress, 128 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -18,7 +18,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | api/domApi-HTMLLayerElement.test.js | converted | 2✓ | 2✓ | 2✓ | Upstream read each layer's name from Leaflet's MapLayer (layer._layer.getName()); the spec reads it where a user meets it, the layer's group in the layer control (getByRole('group', {name}) within layer-control, named via aria-labelledby as in MapML.js), alongside the public label property. Sleeps replaced by waiting for the fixture's labels. OSMTILE only, as upstream: the layers' content is OSMTILE and naming is projection-independent. Absorbs MapML-OpenLayers test/domApi-HTMLLayerElement.test.js (its 'rejected labels never appear' check is the spec's second test). MapML-MapLibre had no label setter (assigning one threw), now added. Not asserted: MapML-OpenLayers and MapML-MapLibre wrap the layer list in an unnamed <fieldset> (an extra unnamed group); MapML.js uses a <div>. |
 | api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). Scenarios shared with domApi-web-map.test.js via test/e2e/api/general/domApi.js. |
 | api/domApi-web-map.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | The <map is="web-map"> run of the domApi-mapml-viewer scenarios: both specs call test/e2e/api/general/domApi.js with their element, so they run the same tests (OSMTILE, @CBMTILE, @custom-projection). Upstream asserted the map's childElementCount (an implementation detail); this checks the element upgraded instead. MapML-OpenLayers test/web-map.test.js and MapML-MapLibre tests/web-map.spec.ts stay pending: they also cover sizing, map-caption and light-DOM hiding, which belong to the web-map/ specs. |
-| api/events/map-change-event-leaflet.test.js | not-started |  |  |  |  |
+| api/events/map-change-event.test.js | converted | 12✓ | 12✓ | 6✓ 6⊘ | Was quarantined as map-change-event-leaflet.test.js: it found the layer checkbox by Leaflet's .leaflet-control-layers-selector, reached the checkboxes with a fixed number of Tab presses (MapML.js's tab order) and ran in a headed persistent context with each test building on the last. Now each test builds its own viewer (D4) in OSMTILE and CBMTILE (D3), with an inline layer on the local tiles instead of tile.openstreetmap.org; checkboxes are found in the layer control by role and name, the layer settings button by aria-expanded (not its localized title); the keyboard tests focus the checkbox and press Space. The extent is given an explicit label: unlabelled extents are named differently (MapML.js and MapML-MapLibre: locale dfExtent, "Sub-layer"; MapML-OpenLayers: its units). Supersedes MapML-MapLibre tests/map-change-event.spec.ts. |
 | api/events/map-projectionchange.test.js | not-started |  |  |  |  |
 | api/locateApi.test.js | converted | 8✓ | 8✓ | 4✓ 4⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE); MapML-MapLibre skips the CBMTILE run. Each test builds its own viewer; the locate button is found through the locate-control testid instead of its English title; locate() results are polled for instead of read straight away / after waitForTimeout. The OSMTILE run uses tiles/osmtile/osmtile-z18.mapml: the map's zoom range is its layers', so locate()'s zoom 16 needs a layer that reaches it (as upstream's cbmt.mapml, 0-17, does). Upstream's locationerror test dispatched the event itself, testing no implementation; it now withdraws the geolocation permission so locate() really fails. The button test also checks that locate() turns location tracking off, as MapML.js does (GeolocationButton.stop()). MapML-MapLibre's locate() left tracking on and was changed to stop it; MapML-OpenLayers and MapML-MapLibre were changed to limit the map's zoom range to their layers' as MapML.js does (setMapMinAndMaxZoom), which no converted spec asserts yet. MapML-OpenLayers test/locate.test.js stays pending: its button tests belong to mapml-viewer/locateButton.test.js. |
 | api/matchMedia/combined-matchMedia.test.js | not-started |  |  |  |  |
@@ -230,7 +230,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-MapLibre port-specific tests
 
-67 pending, 2 deleted, 0 kept, of 69.
+66 pending, 3 deleted, 0 kept, of 69.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
@@ -260,7 +260,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | tests/map-a.spec.ts | pending |  |
 | tests/map-area.spec.ts | pending |  |
 | tests/map-caption.spec.ts | pending |  |
-| tests/map-change-event.spec.ts | pending |  |
+| tests/map-change-event.spec.ts | deleted | api/events/map-change-event.test.js |
 | tests/map-extent-api.spec.ts | pending |  |
 | tests/map-extent-checked-ordering.spec.ts | pending |  |
 | tests/map-extent.spec.ts | pending |  |

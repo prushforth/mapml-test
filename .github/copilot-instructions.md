@@ -16,6 +16,14 @@ Before changing anything, read and follow:
 Running: `node scripts/run.mjs <impl|all> [--no-build|--no-copy] [-- <playwright args>]`
 (see [README.md](../README.md)).
 
+## Writing specs
+
+- Every Playwright call that loads or reloads a page (`page.goto`,
+  `page.reload`, `page.goBack`, `page.goForward`, `page.setContent`) passes
+  `{ waitUntil: 'networkidle' }`, adding it where it's missing, so the test
+  doesn't race the viewer's layers and tiles loading (a common source of
+  flakes).
+
 ## Commits
 
 Ask before making any commit, in this repository and in every repository of
