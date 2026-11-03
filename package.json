@@ -12,6 +12,7 @@
     "test:leaflet": "node scripts/run.mjs MapML.js",
     "test:openlayers": "node scripts/run.mjs MapML-OpenLayers",
     "test:maplibre": "node scripts/run.mjs MapML-MapLibre",
+    "test:converted": "node scripts/run.mjs --converted",
     "build": "node scripts/run.mjs --build-only",
     "serve": "node test/server.js"
   },

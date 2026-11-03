@@ -38,6 +38,7 @@ upstream uses.
 ```bash
 npm test                               # build, copy and test all three
 npm run test:openlayers                # ...or one of them
+npm run test:converted                 # only the specs converted so far
 node scripts/run.mjs ol maplibre       # aliases: leaflet, ol, maplibre
 node scripts/run.mjs ol -- test/e2e/core/mapElement.test.js -g "extent"
 node scripts/run.mjs all --no-build    # copy the siblings' existing dist/
@@ -46,6 +47,22 @@ npm run build                          # build + copy all, no tests
 node scripts/run.mjs --help
 ```
 
+### Running only the converted specs
+
+`--converted` runs only the specs that `porting.json` marks `converted`,
+reading it from `HEAD`, so a conversion counts once it is committed. It
+combines with the other options, and any spec files given after `--` are run
+too:
+
+```bash
+npm run test:converted                         # all three implementations
+npm run test:converted -- ol                   # one of them
+node scripts/run.mjs ol --converted --no-copy  # what is already in dist/
+node scripts/run.mjs all --converted -- test/e2e/api/locateApi.test.js
+```
+
+It lists the specs it picked before running them.
+
 For each implementation, [scripts/run.mjs](scripts/run.mjs):
 
 1. builds it in its sibling checkout,
@@ -53,10 +70,16 @@ For each implementation, [scripts/run.mjs](scripts/run.mjs):
    recording the branch, commit and whether the checkout was dirty,
 3. runs Playwright with `MAPML_IMPL=<name>`, writing `reports/<name>.json`
    and `test-results/<name>/`,
+4. unless the run was filtered (see [Porting status](#porting-status)),
+   records the results in `porting.json` and regenerates `PORTING.md`,
 
 and finally prints a pass/fail summary table. Arguments after `--` go to
 `playwright test`. Use `--siblings DIR` (or `MAPML_SIBLINGS`) if the checkouts
 aren't next to this one.
+
+So a run leaves `porting.json` and `PORTING.md` modified in git (the other
+outputs are git-ignored). Playwright also writes a screenshot baseline for
+any test that has none yet, as a new `*-snapshots/` folder.
 
 Running `npx playwright test` directly (or from the VS Code Playwright
 extension) tests `MAPML_IMPL`, or, when that is unset, whichever

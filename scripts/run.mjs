@@ -9,12 +9,16 @@
 //   --no-build     Don't build; copy the sibling's existing dist/ instead.
 //   --no-copy      Don't build or copy; test what is already in dist/<name>/.
 //   --build-only   Build and copy, but don't run the tests.
+//   --converted    Run only the specs marked "converted" in the committed
+//                  porting.json (HEAD), i.e. conversions that have been
+//                  committed. Any spec files after -- are run as well.
 //   --siblings DIR Where the sibling checkouts live (default: this repo's
 //                  parent; or set MAPML_SIBLINGS).
 //
 // Examples:
 //   node scripts/run.mjs ol -- test/e2e/core/mapElement.test.js
 //   node scripts/run.mjs all --no-build -- --workers=2
+//   node scripts/run.mjs all --converted
 //   node scripts/run.mjs maplibre --build-only
 import { spawnSync } from 'node:child_process';
 import {
@@ -40,6 +44,7 @@ function parseArgs(argv) {
     build: true,
     copy: true,
     test: true,
+    converted: false,
     siblings: process.env.MAPML_SIBLINGS || resolve(ROOT, '..'),
     playwrightArgs: dashdash === -1 ? [] : argv.slice(dashdash + 1)
   };
@@ -48,6 +53,7 @@ function parseArgs(argv) {
     if (a === '--no-build') opts.build = false;
     else if (a === '--no-copy') opts.build = opts.copy = false;
     else if (a === '--build-only') opts.test = false;
+    else if (a === '--converted') opts.converted = true;
     else if (a === '--siblings') opts.siblings = resolve(own[++i]);
     else if (a === '-h' || a === '--help') usage(0);
     else if (a.startsWith('-')) usage(1, `Unknown option ${a}`);
@@ -87,6 +93,22 @@ function run(cmd, args, { cwd, env } = {}) {
 function git(cwd, ...args) {
   const r = spawnSync('git', args, { cwd, encoding: 'utf8' });
   return r.status === 0 ? r.stdout.trim() : null;
+}
+
+// The spec files porting.json marks "converted", read from HEAD so that only
+// committed conversions count.
+function convertedSpecs() {
+  const committed = git(ROOT, 'show', 'HEAD:porting.json');
+  if (committed === null) {
+    throw new Error('--converted: cannot read porting.json from HEAD.');
+  }
+  const specs = Object.entries(JSON.parse(committed).specs)
+    .filter(([, s]) => s.status === 'converted')
+    .map(([file]) => `test/e2e/${file}`);
+  if (!specs.length) {
+    throw new Error('--converted: no spec is marked converted at HEAD.');
+  }
+  return specs;
 }
 
 function siblingDir(impl, siblings) {
@@ -162,6 +184,16 @@ function summarize(impl) {
 }
 
 const opts = parseArgs(process.argv.slice(2));
+if (opts.converted) {
+  try {
+    const specs = convertedSpecs();
+    console.log(`Converted specs (HEAD):\n  ${specs.join('\n  ')}`);
+    opts.playwrightArgs.unshift(...specs);
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
+}
 // Only a run of whole files may update porting.json: a filtered run's counts
 // would overwrite a file's full results with a subset.
 const filtered = opts.playwrightArgs.some(

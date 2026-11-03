@@ -18,24 +18,24 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@cfb13b7+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@848fbf2",
+          "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
           "passed": 2,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
         },
         "MapML-MapLibre": {
           "passed": 2,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c6aa2d8+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@59f4bb3",
+          "date": "2026-11-03"
         }
       },
       "notes": "Upstream read each layer's name from Leaflet's MapLayer (layer._layer.getName()); the spec reads it where a user meets it, the layer's group in the layer control (getByRole('group', {name}) within layer-control, named via aria-labelledby as in MapML.js), alongside the public label property. Sleeps replaced by waiting for the fixture's labels. OSMTILE only, as upstream: the layers' content is OSMTILE and naming is projection-independent. Absorbs MapML-OpenLayers test/domApi-HTMLLayerElement.test.js (its 'rejected labels never appear' check is the spec's second test). MapML-MapLibre had no label setter (assigning one threw), now added. Not asserted: MapML-OpenLayers and MapML-MapLibre wrap the layer list in an unnamed <fieldset> (an extra unnamed group); MapML.js uses a <div>.",
@@ -53,24 +53,24 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@cfb13b7+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@848fbf2",
+          "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
           "passed": 35,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
         },
         "MapML-MapLibre": {
           "passed": 17,
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c6aa2d8+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@59f4bb3",
+          "date": "2026-11-03"
         }
       },
       "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). Scenarios shared with domApi-web-map.test.js via test/e2e/api/general/domApi.js.",
@@ -89,24 +89,24 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@cfb13b7+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@848fbf2",
+          "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
           "passed": 35,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
         },
         "MapML-MapLibre": {
           "passed": 17,
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c6aa2d8+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@59f4bb3",
+          "date": "2026-11-03"
         }
       }
     },
@@ -124,24 +124,24 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@cfb13b7+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@848fbf2",
+          "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
           "passed": 8,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@bb499ef+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
         },
         "MapML-MapLibre": {
           "passed": 4,
           "failed": 0,
           "flaky": 0,
           "skipped": 4,
-          "build": "cross-port-tests@c6aa2d8+dirty",
-          "date": "2026-11-01"
+          "build": "cross-port-tests@59f4bb3",
+          "date": "2026-11-03"
         }
       },
       "notes": "Runs in OSMTILE and CBMTILE (@CBMTILE); MapML-MapLibre skips the CBMTILE run. Each test builds its own viewer; the locate button is found through the locate-control testid instead of its English title; locate() results are polled for instead of read straight away / after waitForTimeout. The OSMTILE run uses tiles/osmtile/osmtile-z18.mapml: the map's zoom range is its layers', so locate()'s zoom 16 needs a layer that reaches it (as upstream's cbmt.mapml, 0-17, does). Upstream's locationerror test dispatched the event itself, testing no implementation; it now withdraws the geolocation permission so locate() really fails. The button test also checks that locate() turns location tracking off, as MapML.js does (GeolocationButton.stop()). MapML-MapLibre's locate() left tracking on and was changed to stop it; MapML-OpenLayers and MapML-MapLibre were changed to limit the map's zoom range to their layers' as MapML.js does (setMapMinAndMaxZoom), which no converted spec asserts yet. MapML-OpenLayers test/locate.test.js stays pending: its button tests belong to mapml-viewer/locateButton.test.js.",
