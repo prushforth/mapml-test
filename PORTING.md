@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 3 converted, 0 in progress, 129 not started, of 132.
+Specs: 4 converted, 0 in progress, 129 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -15,7 +15,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 | Spec | Status | MapML.js | MapML-OpenLayers | MapML-MapLibre | Notes |
 |---|---|---|---|---|---|
-| api/domApi-HTMLLayerElement.test.js | not-started |  |  |  |  |
+| api/domApi-HTMLLayerElement.test.js | converted | 2✓ | 2✓ | 2✓ | Upstream read each layer's name from Leaflet's MapLayer (layer._layer.getName()); the spec reads it where a user meets it, the layer's group in the layer control (getByRole('group', {name}) within layer-control, named via aria-labelledby as in MapML.js), alongside the public label property. Sleeps replaced by waiting for the fixture's labels. OSMTILE only, as upstream: the layers' content is OSMTILE and naming is projection-independent. Absorbs MapML-OpenLayers test/domApi-HTMLLayerElement.test.js (its 'rejected labels never appear' check is the spec's second test). MapML-MapLibre had no label setter (assigning one threw), now added. Not asserted: MapML-OpenLayers and MapML-MapLibre wrap the layer list in an unnamed <fieldset> (an extra unnamed group); MapML.js uses a <div>. |
 | api/domApi-mapml-viewer.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE) plus a @custom-projection test; MapML-MapLibre skips those (no CBMTILE / custom projections). MapML-MapLibre was changed to create controls once and hide/show them, with MapML.js size budget and default 300x150 object size (CONTRACT.md). Scenarios shared with domApi-web-map.test.js via test/e2e/api/general/domApi.js. |
 | api/domApi-web-map.test.js | converted | 35✓ | 35✓ | 17✓ 18⊘ | The <map is="web-map"> run of the domApi-mapml-viewer scenarios: both specs call test/e2e/api/general/domApi.js with their element, so they run the same tests (OSMTILE, @CBMTILE, @custom-projection). Upstream asserted the map's childElementCount (an implementation detail); this checks the element upgraded instead. MapML-OpenLayers test/web-map.test.js and MapML-MapLibre tests/web-map.spec.ts stay pending: they also cover sizing, map-caption and light-DOM hiding, which belong to the web-map/ specs. |
 | api/events/map-change-event-leaflet.test.js | not-started |  |  |  |  |
@@ -147,10 +147,11 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | web-map/mapHeightAndWidthAttributes.test.js | not-started |  |  |  |  |
 | web-map/mapScale.test.js | not-started |  |  |  |  |
 | web-map/mapStatic-leaflet.test.js | not-started |  |  |  |  |
+| zz-probe/probe.test.js | not-started | 1✓ | 1✓ | 1✓ | **file missing** |
 
 ## MapML-OpenLayers port-specific tests
 
-72 pending, 0 deleted, 0 kept, of 72.
+71 pending, 1 deleted, 0 kept, of 72.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
@@ -163,7 +164,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | test/custom-projection.test.js | pending |  |
 | test/debug-mode.test.js | pending |  |
 | test/disabled-cascade.test.js | pending |  |
-| test/domApi-HTMLLayerElement.test.js | pending |  |
+| test/domApi-HTMLLayerElement.test.js | deleted | api/domApi-HTMLLayerElement.test.js |
 | test/drag-drop.test.js | pending |  |
 | test/extent-feature-order.test.js | pending |  |
 | test/extent-opacity.test.js | pending |  |

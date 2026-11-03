@@ -11,7 +11,39 @@
   },
   "specs": {
     "api/domApi-HTMLLayerElement.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 2,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@cfb13b7+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-OpenLayers": {
+          "passed": 2,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@bb499ef+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-MapLibre": {
+          "passed": 2,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@c6aa2d8+dirty",
+          "date": "2026-11-01"
+        }
+      },
+      "notes": "Upstream read each layer's name from Leaflet's MapLayer (layer._layer.getName()); the spec reads it where a user meets it, the layer's group in the layer control (getByRole('group', {name}) within layer-control, named via aria-labelledby as in MapML.js), alongside the public label property. Sleeps replaced by waiting for the fixture's labels. OSMTILE only, as upstream: the layers' content is OSMTILE and naming is projection-independent. Absorbs MapML-OpenLayers test/domApi-HTMLLayerElement.test.js (its 'rejected labels never appear' check is the spec's second test). MapML-MapLibre had no label setter (assigning one threw), now added. Not asserted: MapML-OpenLayers and MapML-MapLibre wrap the layer list in an unnamed <fieldset> (an extra unnamed group); MapML.js uses a <div>.",
+      "supersedes": {
+        "MapML-OpenLayers": [
+          "test/domApi-HTMLLayerElement.test.js"
+        ]
+      }
     },
     "api/domApi-mapml-viewer.test.js": {
       "status": "converted",
@@ -37,7 +69,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c9d3735+dirty",
+          "build": "cross-port-tests@c6aa2d8+dirty",
           "date": "2026-11-01"
         }
       },
@@ -73,7 +105,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c9d3735+dirty",
+          "build": "cross-port-tests@c6aa2d8+dirty",
           "date": "2026-11-01"
         }
       }
@@ -108,7 +140,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 4,
-          "build": "cross-port-tests@c9d3735+dirty",
+          "build": "cross-port-tests@c6aa2d8+dirty",
           "date": "2026-11-01"
         }
       },
@@ -496,6 +528,36 @@
     },
     "web-map/mapStatic-leaflet.test.js": {
       "status": "not-started"
+    },
+    "zz-probe/probe.test.js": {
+      "status": "not-started",
+      "results": {
+        "MapML.js": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@cfb13b7+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-OpenLayers": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@bb499ef+dirty",
+          "date": "2026-11-01"
+        },
+        "MapML-MapLibre": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@c9d3735+dirty",
+          "date": "2026-11-01"
+        }
+      },
+      "missing": true
     }
   },
   "portTests": {
@@ -528,7 +590,8 @@
         "status": "pending"
       },
       "test/domApi-HTMLLayerElement.test.js": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "api/domApi-HTMLLayerElement.test.js"
       },
       "test/drag-drop.test.js": {
         "status": "pending"
