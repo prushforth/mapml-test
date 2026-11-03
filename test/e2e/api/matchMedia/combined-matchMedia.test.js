@@ -1,84 +1,88 @@
-import { test, expect, chromium } from '@playwright/test';
+// Converted for all implementations (mapml-test docs/PLAN.md). Upstream:
+// MapML.js test/e2e/api/matchMedia/combined-matchMedia.test.js. The fixture
+// gives each viewer a layer shown only while one combined media query
+// matches: (not (prefers-color-scheme: dark)) and (prefers-lang: en) and
+// (map-projection: OSMTILE) and (map-zoom < 15) and the viewer's initial
+// extent overlapping its current one. Each test breaks one condition and
+// expects the layer to be hidden.
+// Upstream shared one persistent browser context across the file, each test
+// undoing its change for the next, and launched a second browser by hand for
+// the fr-CA locale. Here each test loads its own page (D4), with the locale
+// and colour scheme set through test.use, and waits for the fixture's
+// initial evaluation before asserting, so 'All conditions are met' can't
+// pass before the query has been evaluated. The projection switch waits for
+// map-projectionchange and is tagged @CBMTILE (D3).
+import { test, expect } from '@playwright/test';
+import { requires } from '../../../helpers/capabilities.js';
+
+const mapTypes = ['mapml-viewer', 'map'];
+
+// Load the fixture and wait until each viewer's layers are ready. The
+// fixture sets the layer's initial visibility in a whenLayersReady()
+// callback; the macrotask after ours resolves runs after that callback too.
+async function load(page) {
+  await page.goto('combined-matchMedia.html');
+  await page.evaluate(async (mapTypes) => {
+    for (const m of mapTypes) {
+      await document.querySelector(m).whenLayersReady();
+    }
+    await new Promise((resolve) => setTimeout(resolve));
+  }, mapTypes);
+}
 
 test.describe('MatchMedia Query Tests', () => {
-  let page;
-  let context;
-
-  test.beforeAll(async () => {
-    context = await chromium.launchPersistentContext('', {
-      locale: 'en-US'
-    });
-    page = await context.newPage();
-    await page.goto('combined-matchMedia.html');
-  });
-
-  test.afterAll(async () => {
-    await context.close();
-  });
-
-  const mapTypes = ['mapml-viewer', 'map'];
+  test.use({ locale: 'en-US', colorScheme: 'light' });
 
   for (const mapType of mapTypes) {
     test.describe(`Tests for ${mapType}`, () => {
+      let layer;
+      test.beforeEach(async ({ page }) => {
+        await load(page);
+        layer = page
+          .locator(mapType)
+          .getByTestId(`test-media-query-${mapType}`);
+      });
+
       test(`${mapType} - ${mapType} - All conditions are met`, async () => {
-        const map = page.locator(mapType);
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
         await expect(layer).not.toHaveAttribute('hidden');
       });
 
-      test(`${mapType} - Prefers-color-scheme does not match`, async () => {
-        const map = page.locator(mapType);
+      test(`${mapType} - Prefers-color-scheme does not match`, async ({
+        page
+      }) => {
         await page.emulateMedia({ colorScheme: 'dark' });
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
         await expect(layer).toHaveAttribute('hidden');
-        await page.emulateMedia({ colorScheme: 'light' });
       });
 
-      test(`${mapType} - Prefers-lang does not match`, async () => {
-        const browser = await chromium.launch();
-        const frContext = await browser.newContext({ locale: 'fr-CA' });
-        const frPage = await frContext.newPage();
-
-        await frPage.goto('combined-matchMedia.html');
-        const map = frPage.locator(mapType);
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
+      test(`${mapType} - map-projection does not match`, {
+        tag: '@CBMTILE'
+      }, async ({ page }) => {
+        requires(test, 'CBMTILE');
+        await page.evaluate(
+          (mapType) =>
+            new Promise((resolve) => {
+              const map = document.querySelector(mapType);
+              map.addEventListener('map-projectionchange', () => resolve(), {
+                once: true
+              });
+              map.projection = 'CBMTILE';
+            }),
+          mapType
+        );
         await expect(layer).toHaveAttribute('hidden');
-
-        await frContext.close();
       });
 
-      test(`${mapType} - map-projection does not match`, async () => {
-        const map = page.locator(mapType);
-        await page.evaluate((mapType) => {
-          const map = document.querySelector(mapType);
-          map.projection = 'CBMTILE';
-        }, mapType);
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
-        await expect(layer).toHaveAttribute('hidden');
-        await page.evaluate((mapType) => {
-          const map = document.querySelector(mapType);
-          map.projection = 'OSMTILE';
-        }, mapType);
-      });
-
-      test(`${mapType} - map-zoom does not match`, async () => {
-        const map = page.locator(mapType);
+      test(`${mapType} - map-zoom does not match`, async ({ page }) => {
         await page.evaluate((mapType) => {
           const map = document.querySelector(mapType);
           map.zoomTo(45.406314, -75.6883335, 15);
         }, mapType);
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
         await expect(layer).toHaveAttribute('hidden');
-        await page.evaluate((mapType) => {
-          const map = document.querySelector(mapType);
-          map.zoomTo(45.406314, -75.6883335, 13);
-        }, mapType);
       });
 
-      test(`${mapType} - Map does not overlap with the bounding box`, async () => {
-        const map = page.locator(mapType);
-        const layer = map.getByTestId(`test-media-query-${mapType}`);
-
+      test(`${mapType} - Map does not overlap with the bounding box`, async ({
+        page
+      }) => {
         // move the map so that the layer is out of the map's extent
         await page.evaluate((mapType) => {
           const map = document.querySelector(mapType);
@@ -92,6 +96,18 @@ test.describe('MatchMedia Query Tests', () => {
           map.zoomTo(45.406314, -75.6883335, 13);
         }, mapType);
         await expect(layer).not.toHaveAttribute('hidden');
+      });
+    });
+
+    test.describe(`Tests for ${mapType} in French`, () => {
+      test.use({ locale: 'fr-CA' });
+
+      test(`${mapType} - Prefers-lang does not match`, async ({ page }) => {
+        await load(page);
+        const layer = page
+          .locator(mapType)
+          .getByTestId(`test-media-query-${mapType}`);
+        await expect(layer).toHaveAttribute('hidden');
       });
     });
   }

@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 6 converted, 0 in progress, 127 not started, of 133.
+Specs: 7 converted, 0 in progress, 126 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -21,7 +21,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | api/events/map-change-event.test.js | converted | 12✓ | 12✓ | 6✓ 6⊘ | Was quarantined as map-change-event-leaflet.test.js: it found the layer checkbox by Leaflet's .leaflet-control-layers-selector, reached the checkboxes with a fixed number of Tab presses (MapML.js's tab order) and ran in a headed persistent context with each test building on the last. Now each test builds its own viewer (D4) in OSMTILE and CBMTILE (D3), with an inline layer on the local tiles instead of tile.openstreetmap.org; checkboxes are found in the layer control by role and name, the layer settings button by aria-expanded (not its localized title); the keyboard tests focus the checkbox and press Space. The extent is given an explicit label: unlabelled extents are named differently (MapML.js and MapML-MapLibre: locale dfExtent, "Sub-layer"; MapML-OpenLayers: its units). Supersedes MapML-MapLibre tests/map-change-event.spec.ts. |
 | api/events/map-projectionchange.test.js | converted | 3✓ | 3✓ | 0✓ 3⊘ | Upstream shared one persistent browser context across the file, slept (waitForTimeout) instead of waiting for the event the spec is named after, and drew the OSMTILE extent from server.arcgisonline.com. Now each test loads its own page (D4), the switch sets the public projection property and waits for map-projectionchange (so the extents' disabled state is asserted when the event fires, which is what MapML.js defers the event for), and the OSMTILE extent uses the local test tiles (D8); the fixture's changeProjection() script is gone. Tagged @CBMTILE (it is about the OSMTILE to CBMTILE switch), so MapML-MapLibre skips it. Upstream's skipped 'History is empty' test passes on MapML.js and MapML-OpenLayers and now runs: it moves the map first (reload enabled) so the history reset is actually tested, and finds reload by its contract testid and role instead of getByLabel('Reload'). MapML-OpenLayers test/projection-switch.test.js stays pending: it covers centre/scale preservation, matchMedia and layer state, which belong to core/projectionChange.test.js. |
 | api/locateApi.test.js | converted | 8✓ | 8✓ | 4✓ 4⊘ | Runs in OSMTILE and CBMTILE (@CBMTILE); MapML-MapLibre skips the CBMTILE run. Each test builds its own viewer; the locate button is found through the locate-control testid instead of its English title; locate() results are polled for instead of read straight away / after waitForTimeout. The OSMTILE run uses tiles/osmtile/osmtile-z18.mapml: the map's zoom range is its layers', so locate()'s zoom 16 needs a layer that reaches it (as upstream's cbmt.mapml, 0-17, does). Upstream's locationerror test dispatched the event itself, testing no implementation; it now withdraws the geolocation permission so locate() really fails. The button test also checks that locate() turns location tracking off, as MapML.js does (GeolocationButton.stop()). MapML-MapLibre's locate() left tracking on and was changed to stop it; MapML-OpenLayers and MapML-MapLibre were changed to limit the map's zoom range to their layers' as MapML.js does (setMapMinAndMaxZoom), which no converted spec asserts yet. MapML-OpenLayers test/locate.test.js stays pending: its button tests belong to mapml-viewer/locateButton.test.js. |
-| api/matchMedia/combined-matchMedia.test.js | not-started |  |  |  |  |
+| api/matchMedia/combined-matchMedia.test.js | converted | 12✓ | 12✓ | 10✓ 2⊘ | Upstream shared one persistent browser context across the file (each test undoing its change for the next) and launched a second browser by hand for fr-CA. Now each test loads its own page (D4), with locale and colour scheme set through test.use (the fr-CA case is its own describe), and waits for the viewers' whenLayersReady() plus a macrotask, so the fixture's initial evaluation has run and 'All conditions are met' can't pass before the query is evaluated. The projection switch waits for map-projectionchange and is tagged @CBMTILE (D3), so MapML-MapLibre skips it. Fixture unchanged. Supersedes the 'compound queries' describe of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed); the rest of those files belongs to the other api/matchMedia specs. |
 | api/matchMedia/map-bounding-box-leaflet.test.js | not-started |  |  |  |  |
 | api/matchMedia/map-projection.test.js | not-started |  |  |  |  |
 | api/matchMedia/map-zoom-leaflet.test.js | not-started |  |  |  |  |
@@ -201,7 +201,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | test/map-style-media.test.js | pending |  |
 | test/map-style.test.js | pending |  |
 | test/mapml2geojson.test.js | pending |  |
-| test/match-media.test.js | pending |  |
+| test/match-media.test.js | pending | Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs. |
 | test/meta.test.js | pending |  |
 | test/mvt.test.js | pending |  |
 | test/paste.test.js | pending |  |
@@ -277,7 +277,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | tests/map-style.spec.ts | pending |  |
 | tests/mapml-viewer-in-shadow-root.spec.ts | pending |  |
 | tests/mapml2geojson.spec.ts | pending |  |
-| tests/match-media.spec.ts | pending |  |
+| tests/match-media.spec.ts | pending | Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs. |
 | tests/mvt-tiles.spec.ts | pending |  |
 | tests/opacity-attribute.spec.ts | pending |  |
 | tests/pmtiles.spec.ts | pending |  |

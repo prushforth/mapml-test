@@ -148,7 +148,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@1661448",
+          "build": "cross-port-tests@1661448+dirty",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -206,7 +206,34 @@
       }
     },
     "api/matchMedia/combined-matchMedia.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 12,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@1661448+dirty",
+          "date": "2026-11-03"
+        },
+        "MapML-OpenLayers": {
+          "passed": 12,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
+        },
+        "MapML-MapLibre": {
+          "passed": 10,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 2,
+          "build": "cross-port-tests@17c3021",
+          "date": "2026-11-03"
+        }
+      },
+      "notes": "Upstream shared one persistent browser context across the file (each test undoing its change for the next) and launched a second browser by hand for fr-CA. Now each test loads its own page (D4), with locale and colour scheme set through test.use (the fr-CA case is its own describe), and waits for the viewers' whenLayersReady() plus a macrotask, so the fixture's initial evaluation has run and 'All conditions are met' can't pass before the query is evaluated. The projection switch waits for map-projectionchange and is tagged @CBMTILE (D3), so MapML-MapLibre skips it. Fixture unchanged. Supersedes the 'compound queries' describe of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed); the rest of those files belongs to the other api/matchMedia specs."
     },
     "api/matchMedia/map-bounding-box-leaflet.test.js": {
       "status": "not-started"
@@ -756,7 +783,8 @@
         "status": "pending"
       },
       "test/match-media.test.js": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs."
       },
       "test/meta.test.js": {
         "status": "pending"
@@ -968,7 +996,8 @@
         "status": "pending"
       },
       "tests/match-media.spec.ts": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs."
       },
       "tests/mvt-tiles.spec.ts": {
         "status": "pending"
