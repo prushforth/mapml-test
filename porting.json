@@ -235,8 +235,35 @@
       },
       "notes": "Upstream shared one persistent browser context across the file (each test undoing its change for the next) and launched a second browser by hand for fr-CA. Now each test loads its own page (D4), with locale and colour scheme set through test.use (the fr-CA case is its own describe), and waits for the viewers' whenLayersReady() plus a macrotask, so the fixture's initial evaluation has run and 'All conditions are met' can't pass before the query is evaluated. The projection switch waits for map-projectionchange and is tagged @CBMTILE (D3), so MapML-MapLibre skips it. Fixture unchanged. Supersedes the 'compound queries' describe of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed); the rest of those files belongs to the other api/matchMedia specs."
     },
-    "api/matchMedia/map-bounding-box-leaflet.test.js": {
-      "status": "not-started"
+    "api/matchMedia/map-bounding-box.test.js": {
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@1661448+dirty",
+          "date": "2026-11-03"
+        },
+        "MapML-OpenLayers": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
+        },
+        "MapML-MapLibre": {
+          "passed": 1,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@17c3021",
+          "date": "2026-11-03"
+        }
+      },
+      "notes": "Was quarantined as map-bounding-box-leaflet.test.js: it clicked Leaflet's .leaflet-control-zoom-in/-out, ran in a headed persistent context and slept 500ms between steps. Now the zoom buttons are found by data-testid (contract), the test loads its own page with waitUntil networkidle (D4) and waits for whenLayersReady(), and the sleeps are replaced by polling the viewer's public zoom. Upstream's assertions are unchanged. The fixture's query includes (map-zoom < 14) and the viewer starts at 14, so the query only starts matching after the first zoom-out; the panning steps run at zoom 13, so they flip the bbox conditions alone. OSMTILE only, as upstream: the fixture's query and layer are written for OSMTILE. Fixture unchanged. Supersedes the 'bounding-box features' describe of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed)."
     },
     "api/matchMedia/map-projection.test.js": {
       "status": "not-started"
@@ -784,7 +811,7 @@
       },
       "test/match-media.test.js": {
         "status": "pending",
-        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs."
+        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js and its bounding-box test to api/matchMedia/map-bounding-box.test.js (both removed here); the rest belongs to the other api/matchMedia specs."
       },
       "test/meta.test.js": {
         "status": "pending"
@@ -997,7 +1024,7 @@
       },
       "tests/match-media.spec.ts": {
         "status": "pending",
-        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js (removed here); the rest belongs to the other api/matchMedia specs."
+        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js and its bounding-box test to api/matchMedia/map-bounding-box.test.js (both removed here); the rest belongs to the other api/matchMedia specs."
       },
       "tests/mvt-tiles.spec.ts": {
         "status": "pending"
