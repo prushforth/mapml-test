@@ -18,7 +18,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@848fbf2",
+          "build": "cross-port-tests@1661448",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -34,7 +34,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@59f4bb3",
+          "build": "cross-port-tests@17c3021",
           "date": "2026-11-03"
         }
       },
@@ -53,7 +53,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@848fbf2",
+          "build": "cross-port-tests@1661448",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -69,7 +69,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@59f4bb3",
+          "build": "cross-port-tests@17c3021",
           "date": "2026-11-03"
         }
       },
@@ -89,7 +89,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@848fbf2",
+          "build": "cross-port-tests@1661448",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -105,7 +105,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@59f4bb3",
+          "build": "cross-port-tests@17c3021",
           "date": "2026-11-03"
         }
       }
@@ -118,7 +118,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@848fbf2",
+          "build": "cross-port-tests@1661448",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -134,14 +134,41 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 6,
-          "build": "cross-port-tests@59f4bb3",
+          "build": "cross-port-tests@17c3021",
           "date": "2026-11-03"
         }
       },
       "notes": "Was quarantined as map-change-event-leaflet.test.js: it found the layer checkbox by Leaflet's .leaflet-control-layers-selector, reached the checkboxes with a fixed number of Tab presses (MapML.js's tab order) and ran in a headed persistent context with each test building on the last. Now each test builds its own viewer (D4) in OSMTILE and CBMTILE (D3), with an inline layer on the local tiles instead of tile.openstreetmap.org; checkboxes are found in the layer control by role and name, the layer settings button by aria-expanded (not its localized title); the keyboard tests focus the checkbox and press Space. The extent is given an explicit label: unlabelled extents are named differently (MapML.js and MapML-MapLibre: locale dfExtent, \"Sub-layer\"; MapML-OpenLayers: its units). Supersedes MapML-MapLibre tests/map-change-event.spec.ts."
     },
     "api/events/map-projectionchange.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@1661448",
+          "date": "2026-11-03"
+        },
+        "MapML-OpenLayers": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@f26365a",
+          "date": "2026-11-03"
+        },
+        "MapML-MapLibre": {
+          "passed": 0,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 3,
+          "build": "cross-port-tests@17c3021",
+          "date": "2026-11-03"
+        }
+      },
+      "notes": "Upstream shared one persistent browser context across the file, slept (waitForTimeout) instead of waiting for the event the spec is named after, and drew the OSMTILE extent from server.arcgisonline.com. Now each test loads its own page (D4), the switch sets the public projection property and waits for map-projectionchange (so the extents' disabled state is asserted when the event fires, which is what MapML.js defers the event for), and the OSMTILE extent uses the local test tiles (D8); the fixture's changeProjection() script is gone. Tagged @CBMTILE (it is about the OSMTILE to CBMTILE switch), so MapML-MapLibre skips it. Upstream's skipped 'History is empty' test passes on MapML.js and MapML-OpenLayers and now runs: it moves the map first (reload enabled) so the history reset is actually tested, and finds reload by its contract testid and role instead of getByLabel('Reload'). MapML-OpenLayers test/projection-switch.test.js stays pending: it covers centre/scale preservation, matchMedia and layer state, which belong to core/projectionChange.test.js."
     },
     "api/locateApi.test.js": {
       "status": "converted",
@@ -151,7 +178,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@848fbf2",
+          "build": "cross-port-tests@1661448",
           "date": "2026-11-03"
         },
         "MapML-OpenLayers": {
@@ -167,7 +194,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 4,
-          "build": "cross-port-tests@59f4bb3",
+          "build": "cross-port-tests@17c3021",
           "date": "2026-11-03"
         }
       },
