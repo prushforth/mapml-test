@@ -83,6 +83,8 @@ The elements' documented API: attributes and properties (`lat`, `lon`,
 `extent`, `layers`, `label`, `checked`, `hidden`, `opacity`, ...), methods
 (`zoomTo`, `back`, `forward`, `reload`, `defineCustomProjection`,
 `matchMedia`, `whenReady`, `mapml2geojson`, ...) and events (`map-moveend`,
-`map-change`, `loadedmetadata`, ...).
+`zoomend`, `map-change`, `loadedmetadata`, ...). `zoomend` is dispatched on
+the viewer after the map's zoom has changed, with `zoom` (and so
+`matchMedia('(map-zoom: …)')`) already reflecting the new zoom.
 
 Anything else a spec relies on must be added to this document first.

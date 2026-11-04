@@ -295,8 +295,35 @@
       },
       "notes": "Upstream ran in a headed persistent context shared across the file and slept 500ms after each button click. Now the test loads its own page (D4) and waits for whenLayersReady() plus a macrotask, so the fixture's initial evaluation (itself in a whenLayersReady() callback) has run; the sleeps are gone because the attribute assertions retry, after first waiting for the viewer's projection attribute to change. Besides upstream's assertions (the non-matching layer is hidden after each switch) it checks the initial state and that the matching layer is shown, which is what the MapML-OpenLayers port test covered. Tagged @CBMTILE (D3), so MapML-MapLibre skips it. Fixture unchanged. Supersedes the 'map-projection' describe of MapML-OpenLayers test/match-media.test.js (removed); MapML-MapLibre had no projection-switch test."
     },
-    "api/matchMedia/map-zoom-leaflet.test.js": {
-      "status": "not-started"
+    "api/matchMedia/map-zoom.test.js": {
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@fbedd30+dirty",
+          "date": "2026-11-04"
+        },
+        "MapML-OpenLayers": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@da0a3e0+dirty",
+          "date": "2026-11-04"
+        },
+        "MapML-MapLibre": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@e0611c9+dirty",
+          "date": "2026-11-04"
+        }
+      },
+      "notes": "Was quarantined as map-zoom-leaflet.test.js: it ran in a persistent context shared across the file and slept 500ms after each zoom-in click. Now the test loads its own page (D4) and waits for whenLayersReady(); the sleeps are gone because the #zoom-indicator assertion retries before the next click. The zoom-in button is found by data-testid (contract). Marked test.slow(): 17 animated zooms take ~22s on MapML-MapLibre. Fixture: the tile tref now points at the local tiles/osmtile tiles instead of tile.openstreetmap.org (D8); live tile loading slowed MapML-MapLibre's clicks enough to near the 30s timeout. MapML-MapLibre lacked the documented zoomend viewer event the fixture listens for; added to CONTRACT.md and implemented (dispatched after reflecting the view, as MapML.js does). Two tests moved in from the 'map-zoom' describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): map-zoom comparisons and change events on zoomTo, and zoomend firing on a zoom but not on a pan."
     },
     "api/matchMedia/prefers-color-scheme.test.js": {
       "status": "not-started"
@@ -838,7 +865,7 @@
       },
       "test/match-media.test.js": {
         "status": "pending",
-        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js, its bounding-box test to api/matchMedia/map-bounding-box.test.js and its map-projection test to api/matchMedia/map-projection.test.js (all removed here); the rest belongs to the other api/matchMedia specs."
+        "notes": "Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs."
       },
       "test/meta.test.js": {
         "status": "pending"
@@ -1051,7 +1078,7 @@
       },
       "tests/match-media.spec.ts": {
         "status": "pending",
-        "notes": "Its compound-query test moved to api/matchMedia/combined-matchMedia.test.js and its bounding-box test to api/matchMedia/map-bounding-box.test.js (both removed here); the rest belongs to the other api/matchMedia specs. It never had a map-projection test (api/matchMedia/map-projection.test.js is skipped here: OSMTILE only)."
+        "notes": "Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs."
       },
       "tests/mvt-tiles.spec.ts": {
         "status": "pending"
