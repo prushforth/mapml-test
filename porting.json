@@ -326,7 +326,34 @@
       "notes": "Was quarantined as map-zoom-leaflet.test.js: it ran in a persistent context shared across the file and slept 500ms after each zoom-in click. Now the test loads its own page (D4) and waits for whenLayersReady(); the sleeps are gone because the #zoom-indicator assertion retries before the next click. The zoom-in button is found by data-testid (contract). Marked test.slow(): 17 animated zooms take ~22s on MapML-MapLibre. Fixture: the tile tref now points at the local tiles/osmtile tiles instead of tile.openstreetmap.org (D8); live tile loading slowed MapML-MapLibre's clicks enough to near the 30s timeout. MapML-MapLibre lacked the documented zoomend viewer event the fixture listens for; added to CONTRACT.md and implemented (dispatched after reflecting the view, as MapML.js does). Two tests moved in from the 'map-zoom' describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): map-zoom comparisons and change events on zoomTo, and zoomend firing on a zoom but not on a pan."
     },
     "api/matchMedia/prefers-color-scheme.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@911f616",
+          "date": "2026-11-04"
+        },
+        "MapML-OpenLayers": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@dc2d80d",
+          "date": "2026-11-04"
+        },
+        "MapML-MapLibre": {
+          "passed": 3,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@5676354",
+          "date": "2026-11-04"
+        }
+      },
+      "notes": "Upstream shared one page from a persistent context across the file (and opened a second, unused page). Now each test emulates its colour scheme on its own page before loading the fixture (D4), and the #preferred-color text assertion retries. Besides upstream assertions each scheme test checks that the (prefers-color-scheme: light) and (prefers-color-scheme: dark) matchers agree. One test moved in from the prefers-color-scheme describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): a matcher fires change when the emulated colour scheme flips. Fixture unchanged. Passed on all three as converted."
     },
     "api/matchMedia/prefers-lang.test.js": {
       "status": "not-started"
@@ -865,7 +892,7 @@
       },
       "test/match-media.test.js": {
         "status": "pending",
-        "notes": "Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs."
+        "notes": "Its compound-query, bounding-box, projection-switch, map-zoom and prefers-color-scheme tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js, map-zoom.test.js and prefers-color-scheme.test.js (removed here); the prefers-lang tests belong to api/matchMedia/prefers-lang.test.js."
       },
       "test/meta.test.js": {
         "status": "pending"
@@ -1078,7 +1105,7 @@
       },
       "tests/match-media.spec.ts": {
         "status": "pending",
-        "notes": "Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs."
+        "notes": "Its compound-query, bounding-box, projection-switch, map-zoom and prefers-color-scheme tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js, map-zoom.test.js and prefers-color-scheme.test.js (removed here); the prefers-lang tests belong to api/matchMedia/prefers-lang.test.js."
       },
       "tests/mvt-tiles.spec.ts": {
         "status": "pending"
