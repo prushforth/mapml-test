@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Announce movement (OSMTILE, web-map)</title>
+  <meta charset="UTF-8">
+  <script>
+    let options = document.createElement("map-options");
+    options.innerHTML = '{"announceMovement":true}';
+    document.head.appendChild(options);
+  </script>
+  <script type="module" src="mapml.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- The OSMTILE counterpart of ../web-map/web-map.html, for
+       announceMovement.test.js; the layer is the one in
+       announceMovementMapmlViewer.html (see the note there). -->
+  <map is="web-map" data-testid="testviewer" style="height: 600px;width:600px;" projection="OSMTILE" zoom="2" lat="41" lon="-90" controls>
+    <map-layer data-testid="testlayer" label="OSMTILE - INLINE" checked>
+      <map-extent units="OSMTILE" checked hidden>
+        <map-input name="z" type="zoom" value="5" min="2" max="5"></map-input>
+        <map-input name="y" type="location" axis="row" units="tilematrix" min="8" max="15"></map-input>
+        <map-input name="x" type="location" axis="column" units="tilematrix" min="3" max="12"></map-input>
+        <map-link rel="tile" tref="/data/osmtile/{z}/{x}/{y}.png"></map-link>
+      </map-extent>
+    </map-layer>
+  </map>
+</body>
+
+</html>

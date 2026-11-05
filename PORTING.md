@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 12 converted, 0 in progress, 121 not started, of 133.
+Specs: 13 converted, 0 in progress, 120 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -27,7 +27,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | api/matchMedia/map-zoom.test.js | converted | 3✓ | 3✓ | 3✓ | Was quarantined as map-zoom-leaflet.test.js: it ran in a persistent context shared across the file and slept 500ms after each zoom-in click. Now the test loads its own page (D4) and waits for whenLayersReady(); the sleeps are gone because the #zoom-indicator assertion retries before the next click. The zoom-in button is found by data-testid (contract). Marked test.slow(): 17 animated zooms take ~22s on MapML-MapLibre. Fixture: the tile tref now points at the local tiles/osmtile tiles instead of tile.openstreetmap.org (D8); live tile loading slowed MapML-MapLibre's clicks enough to near the 30s timeout. MapML-MapLibre lacked the documented zoomend viewer event the fixture listens for; added to CONTRACT.md and implemented (dispatched after reflecting the view, as MapML.js does). Two tests moved in from the 'map-zoom' describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): map-zoom comparisons and change events on zoomTo, and zoomend firing on a zoom but not on a pan. |
 | api/matchMedia/prefers-color-scheme.test.js | converted | 3✓ | 3✓ | 3✓ | Upstream shared one page from a persistent context across the file (and opened a second, unused page). Now each test emulates its colour scheme on its own page before loading the fixture (D4), and the #preferred-color text assertion retries. Besides upstream assertions each scheme test checks that the (prefers-color-scheme: light) and (prefers-color-scheme: dark) matchers agree. One test moved in from the prefers-color-scheme describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): a matcher fires change when the emulated colour scheme flips. Fixture unchanged. Passed on all three as converted. |
 | api/matchMedia/prefers-lang.test.js | converted | 2✓ | 2✓ | 2✓ | Upstream launched a new browser by hand for each locale (and never closed it), outside the config, so the page did not inherit its context. Now each locale is a describe that sets it through test.use, and each test loads its own page (D4). Besides upstream's assertion that the other language's layer is hidden, each test checks that layer is unchecked, that the preferred layer stays shown and checked, and (moved in from the prefers-lang describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts, both now removed) that the (prefers-lang: en) and (prefers-lang: fr) matchers agree with the locale. Fixture unchanged: it is CBMTILE, but the test checks DOM state set by the fixture script, not rendering, so it is not tagged and runs on MapML-MapLibre too. Passed on all three as converted. |
-| core/announceMovement.test.js | not-started |  |  |  |  |
+| core/announceMovement.test.js | converted | 12✓ | 12✓ | 6✓ 6⊘ | Upstream CBMTILE scenario runs unchanged on upstream fixtures (@CBMTILE), and again in OSMTILE on new counterparts announceMovementMapmlViewer.html / announceMovementWebMap.html (layer min zoom 2, sized so the moves hold for keyboard pan steps of 80-128px), each for <mapml-viewer> and <map is="web-map">. The second test used to start where the first left off; it now replays those moves (D4). The live region is found by class (CONTRACT.md, new section), and every announcement is recorded by a MutationObserver, so key presses are followed until an announcement ending "zoom level N" instead of fixed sleeps, and transient bound messages are checked deterministically. Added: the region is role=status aria-live=polite aria-atomic=true, Tab lands on zoom-in-button before Enter, and a bounced pan restores lon (moved in from both port tests, now deleted). Fixed MapML-OpenLayers: keyboard pan/zoom was dead on <map is=web-map> (OL only accepts keys targeted at its target shadow host, the inner div; web-map now forwards the <map>s keydowns). Fixed MapML-MapLibre: after bouncing back into bounds it never re-announced "zoom level N" (upstream asserts it; MapML.js announces the last moveend of a traversal). |
 | core/ArrowKeyNavContextMenu.test.js | not-started |  |  |  |  |
 | core/axisInferring.test.js | not-started |  |  |  |  |
 | core/debugMode.test.js | not-started |  |  |  |  |
@@ -151,12 +151,12 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-OpenLayers port-specific tests
 
-70 pending, 2 deleted, 0 kept, of 72.
+69 pending, 3 deleted, 0 kept, of 72.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
 | test/alternate-projection.test.js | pending |  |
-| test/announce-movement.test.js | pending |  |
+| test/announce-movement.test.js | deleted | core/announceMovement.test.js Deleted with its fixture test/fixtures/announce-movement.html. Its live-region ARIA check and bounce-restores-centre check moved into the spec. |
 | test/attribution.test.js | pending |  |
 | test/context-menu-copy.test.js | pending |  |
 | test/context-menu.test.js | pending |  |
@@ -230,11 +230,11 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-MapLibre port-specific tests
 
-65 pending, 4 deleted, 0 kept, of 69.
+64 pending, 5 deleted, 0 kept, of 69.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
-| tests/announce-movement.spec.ts | pending |  |
+| tests/announce-movement.spec.ts | deleted | core/announceMovement.test.js Its live-region ARIA check moved into the spec. Not moved: the repeated-Minus-at-min-zoom test, which accepted either of two outcomes, and the out-of-bounds zoom via renderer.map.jumpTo (private; the spec reaches it by keyboard). It also expected the bound message to remain after a bounce, contrary to upstream; MapML-MapLibre was fixed. demo/announce-movement.html stays as a demo. |
 | tests/attribution.spec.ts | pending |  |
 | tests/context-menu.spec.ts | pending |  |
 | tests/controls-list.spec.ts | deleted | api/domApi-mapml-viewer.test.js |

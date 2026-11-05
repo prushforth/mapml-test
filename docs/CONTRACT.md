@@ -76,6 +76,19 @@ class names: `.mapml-contextmenu` (map), `.mapml-layer-menu` (layer),
 - **Layer menu:** `zoom-to-layer`, `copy-layer`.
 - **Extent menu:** `zoom-to-extent`, `copy-extent`.
 
+## Movement announcements: `.mapml-screen-reader-output`
+
+With `M.options.announceMovement` on (`<map-options>{"announceMovement":true}</map-options>`
+in the `<head>` before the implementation loads), each viewer has a live region,
+`<output class="mapml-screen-reader-output" role="status" aria-live="polite"
+aria-atomic="true">`, in its shadow root, whose text is MapML.js's
+`AnnounceMovement` wording (`zoom level N`, the min/max zoom prefixes, and the
+`am*Bound`/`amZoomedOut` messages). Specs find it by that class, excluding the
+feature-index overlay's `<output>`, which shares it
+(`output.mapml-screen-reader-output:not(.mapml-feature-index)`). As in MapML.js,
+when a move leaves the layers' bounds the map goes back, and the live region
+gives the bound message first and then, once the map is back, `zoom level N`.
+
 ## Public API that specs may use
 
 The elements' documented API: attributes and properties (`lat`, `lon`,

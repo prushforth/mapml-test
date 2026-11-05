@@ -364,7 +364,7 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@34a3ff3+dirty",
-          "date": "2026-11-04"
+          "date": "2026-11-05"
         },
         "MapML-OpenLayers": {
           "passed": 2,
@@ -372,7 +372,7 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@04b429b+dirty",
-          "date": "2026-11-04"
+          "date": "2026-11-05"
         },
         "MapML-MapLibre": {
           "passed": 2,
@@ -380,13 +380,40 @@
           "flaky": 0,
           "skipped": 0,
           "build": "cross-port-tests@3cc3054+dirty",
-          "date": "2026-11-04"
+          "date": "2026-11-05"
         }
       },
       "notes": "Upstream launched a new browser by hand for each locale (and never closed it), outside the config, so the page did not inherit its context. Now each locale is a describe that sets it through test.use, and each test loads its own page (D4). Besides upstream's assertion that the other language's layer is hidden, each test checks that layer is unchecked, that the preferred layer stays shown and checked, and (moved in from the prefers-lang describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts, both now removed) that the (prefers-lang: en) and (prefers-lang: fr) matchers agree with the locale. Fixture unchanged: it is CBMTILE, but the test checks DOM state set by the fixture script, not rendering, so it is not tagged and runs on MapML-MapLibre too. Passed on all three as converted."
     },
     "core/announceMovement.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "notes": "Upstream CBMTILE scenario runs unchanged on upstream fixtures (@CBMTILE), and again in OSMTILE on new counterparts announceMovementMapmlViewer.html / announceMovementWebMap.html (layer min zoom 2, sized so the moves hold for keyboard pan steps of 80-128px), each for <mapml-viewer> and <map is=\"web-map\">. The second test used to start where the first left off; it now replays those moves (D4). The live region is found by class (CONTRACT.md, new section), and every announcement is recorded by a MutationObserver, so key presses are followed until an announcement ending \"zoom level N\" instead of fixed sleeps, and transient bound messages are checked deterministically. Added: the region is role=status aria-live=polite aria-atomic=true, Tab lands on zoom-in-button before Enter, and a bounced pan restores lon (moved in from both port tests, now deleted). Fixed MapML-OpenLayers: keyboard pan/zoom was dead on <map is=web-map> (OL only accepts keys targeted at its target shadow host, the inner div; web-map now forwards the <map>s keydowns). Fixed MapML-MapLibre: after bouncing back into bounds it never re-announced \"zoom level N\" (upstream asserts it; MapML.js announces the last moveend of a traversal).",
+      "results": {
+        "MapML.js": {
+          "passed": 12,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@dd40a59+dirty",
+          "date": "2026-11-05"
+        },
+        "MapML-OpenLayers": {
+          "passed": 12,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@72fe7e0+dirty",
+          "date": "2026-11-05"
+        },
+        "MapML-MapLibre": {
+          "passed": 6,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 6,
+          "build": "cross-port-tests@615b478+dirty",
+          "date": "2026-11-05"
+        }
+      }
     },
     "core/ArrowKeyNavContextMenu.test.js": {
       "status": "not-started"
@@ -782,7 +809,9 @@
         "status": "pending"
       },
       "test/announce-movement.test.js": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "core/announceMovement.test.js",
+        "notes": "Deleted with its fixture test/fixtures/announce-movement.html. Its live-region ARIA check and bounce-restores-centre check moved into the spec."
       },
       "test/attribution.test.js": {
         "status": "pending"
@@ -1000,7 +1029,9 @@
     },
     "MapML-MapLibre": {
       "tests/announce-movement.spec.ts": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "core/announceMovement.test.js",
+        "notes": "Its live-region ARIA check moved into the spec. Not moved: the repeated-Minus-at-min-zoom test, which accepted either of two outcomes, and the out-of-bounds zoom via renderer.map.jumpTo (private; the spec reaches it by keyboard). It also expected the bound message to remain after a bounce, contrary to upstream; MapML-MapLibre was fixed. demo/announce-movement.html stays as a demo."
       },
       "tests/attribution.spec.ts": {
         "status": "pending"
