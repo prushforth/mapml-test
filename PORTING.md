@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 10 converted, 1 in progress, 122 not started, of 133.
+Specs: 12 converted, 0 in progress, 121 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -25,8 +25,8 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | api/matchMedia/map-bounding-box.test.js | converted | 1✓ | 1✓ | 1✓ | Was quarantined as map-bounding-box-leaflet.test.js: it clicked Leaflet's .leaflet-control-zoom-in/-out, ran in a headed persistent context and slept 500ms between steps. Now the zoom buttons are found by data-testid (contract), the test loads its own page with waitUntil networkidle (D4) and waits for whenLayersReady(), and the sleeps are replaced by polling the viewer's public zoom. Upstream's assertions are unchanged. The fixture's query includes (map-zoom < 14) and the viewer starts at 14, so the query only starts matching after the first zoom-out; the panning steps run at zoom 13, so they flip the bbox conditions alone. OSMTILE only, as upstream: the fixture's query and layer are written for OSMTILE. Fixture unchanged. Supersedes the 'bounding-box features' describe of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed). |
 | api/matchMedia/map-projection.test.js | converted | 1✓ | 1✓ | 0✓ 1⊘ | Upstream ran in a headed persistent context shared across the file and slept 500ms after each button click. Now the test loads its own page (D4) and waits for whenLayersReady() plus a macrotask, so the fixture's initial evaluation (itself in a whenLayersReady() callback) has run; the sleeps are gone because the attribute assertions retry, after first waiting for the viewer's projection attribute to change. Besides upstream's assertions (the non-matching layer is hidden after each switch) it checks the initial state and that the matching layer is shown, which is what the MapML-OpenLayers port test covered. Tagged @CBMTILE (D3), so MapML-MapLibre skips it. Fixture unchanged. Supersedes the 'map-projection' describe of MapML-OpenLayers test/match-media.test.js (removed); MapML-MapLibre had no projection-switch test. |
 | api/matchMedia/map-zoom.test.js | converted | 3✓ | 3✓ | 3✓ | Was quarantined as map-zoom-leaflet.test.js: it ran in a persistent context shared across the file and slept 500ms after each zoom-in click. Now the test loads its own page (D4) and waits for whenLayersReady(); the sleeps are gone because the #zoom-indicator assertion retries before the next click. The zoom-in button is found by data-testid (contract). Marked test.slow(): 17 animated zooms take ~22s on MapML-MapLibre. Fixture: the tile tref now points at the local tiles/osmtile tiles instead of tile.openstreetmap.org (D8); live tile loading slowed MapML-MapLibre's clicks enough to near the 30s timeout. MapML-MapLibre lacked the documented zoomend viewer event the fixture listens for; added to CONTRACT.md and implemented (dispatched after reflecting the view, as MapML.js does). Two tests moved in from the 'map-zoom' describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): map-zoom comparisons and change events on zoomTo, and zoomend firing on a zoom but not on a pan. |
-| api/matchMedia/prefers-color-scheme.test.js | in-progress | 3✓ | 3✓ | 3✓ |  |
-| api/matchMedia/prefers-lang.test.js | not-started |  |  |  |  |
+| api/matchMedia/prefers-color-scheme.test.js | converted | 3✓ | 3✓ | 3✓ | Upstream shared one page from a persistent context across the file (and opened a second, unused page). Now each test emulates its colour scheme on its own page before loading the fixture (D4), and the #preferred-color text assertion retries. Besides upstream assertions each scheme test checks that the (prefers-color-scheme: light) and (prefers-color-scheme: dark) matchers agree. One test moved in from the prefers-color-scheme describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): a matcher fires change when the emulated colour scheme flips. Fixture unchanged. Passed on all three as converted. |
+| api/matchMedia/prefers-lang.test.js | converted | 2✓ | 2✓ | 2✓ | Upstream launched a new browser by hand for each locale (and never closed it), outside the config, so the page did not inherit its context. Now each locale is a describe that sets it through test.use, and each test loads its own page (D4). Besides upstream's assertion that the other language's layer is hidden, each test checks that layer is unchecked, that the preferred layer stays shown and checked, and (moved in from the prefers-lang describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts, both now removed) that the (prefers-lang: en) and (prefers-lang: fr) matchers agree with the locale. Fixture unchanged: it is CBMTILE, but the test checks DOM state set by the fixture script, not rendering, so it is not tagged and runs on MapML-MapLibre too. Passed on all three as converted. |
 | core/announceMovement.test.js | not-started |  |  |  |  |
 | core/ArrowKeyNavContextMenu.test.js | not-started |  |  |  |  |
 | core/axisInferring.test.js | not-started |  |  |  |  |
@@ -151,7 +151,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-OpenLayers port-specific tests
 
-71 pending, 1 deleted, 0 kept, of 72.
+70 pending, 2 deleted, 0 kept, of 72.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
@@ -201,7 +201,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | test/map-style-media.test.js | pending |  |
 | test/map-style.test.js | pending |  |
 | test/mapml2geojson.test.js | pending |  |
-| test/match-media.test.js | pending | Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs. |
+| test/match-media.test.js | deleted | api/matchMedia/prefers-lang.test.js Split across the api/matchMedia specs: its compound-query, bounding-box, projection-switch, map-zoom, prefers-color-scheme and prefers-lang tests moved to combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js, map-zoom.test.js, prefers-color-scheme.test.js and prefers-lang.test.js; the last of them emptied the file, so it was deleted with its fixture test/fixtures/match-media.html. |
 | test/meta.test.js | pending |  |
 | test/mvt.test.js | pending |  |
 | test/paste.test.js | pending |  |
@@ -230,7 +230,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 
 ## MapML-MapLibre port-specific tests
 
-66 pending, 3 deleted, 0 kept, of 69.
+65 pending, 4 deleted, 0 kept, of 69.
 
 | Test | Status | Superseded by / reason |
 |---|---|---|
@@ -277,7 +277,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | tests/map-style.spec.ts | pending |  |
 | tests/mapml-viewer-in-shadow-root.spec.ts | pending |  |
 | tests/mapml2geojson.spec.ts | pending |  |
-| tests/match-media.spec.ts | pending | Its compound-query, bounding-box, projection-switch and map-zoom tests moved to api/matchMedia/combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js and map-zoom.test.js (removed here); the prefers-color-scheme and prefers-lang tests belong to the remaining api/matchMedia specs. |
+| tests/match-media.spec.ts | deleted | api/matchMedia/prefers-lang.test.js Split across the api/matchMedia specs: its compound-query, bounding-box, projection-switch, map-zoom, prefers-color-scheme and prefers-lang tests moved to combined-matchMedia.test.js, map-bounding-box.test.js, map-projection.test.js, map-zoom.test.js, prefers-color-scheme.test.js and prefers-lang.test.js; the last of them emptied the file, so it was deleted. |
 | tests/mvt-tiles.spec.ts | pending |  |
 | tests/opacity-attribute.spec.ts | pending |  |
 | tests/pmtiles.spec.ts | pending |  |
