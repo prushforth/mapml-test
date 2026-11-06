@@ -476,7 +476,34 @@
       "notes": "Upstream shared one persistent browser context across the file and slept 1s before reading. Now each test loads its own page (D4) and polls the layer's public extent. Upstream's scenario runs unchanged in CBMTILE (@CBMTILE, upstream's fixture) and again in OSMTILE (D3) on a new counterpart, axisInferringOSMTILE.html: the same four layers and Arizona feature, with extent metas written for OSMTILE's grid; its expected values were measured on MapML.js, as upstream's were. Coordinates are compared to six decimal places rather than exactly: in OSMTILE the implementations agree only to the last few bits (MapML-OpenLayers goes through its resolutions table). MapML-MapLibre skips the CBMTILE run. Fix: MapML-OpenLayers clamped every CRS's latitude to its gcrs area of use before projecting (Proj.CRS.project), so in CBMTILE every gcrs feature south of 40.04N was flattened onto that parallel (Arizona drew as a line) and feature/layer extents were wrong; it now clamps only EPSG:3857, as Leaflet's SphericalMercator does (proj4leaflet CRSs never clamp). Supersedes the OSMTILE axisInferring port at the end of MapML-MapLibre tests/extent-derivation.spec.ts (removed); the rest of that file covers other extent behaviour and stays pending."
     },
     "core/debugMode.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "results": {
+        "MapML.js": {
+          "passed": 14,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@197e7d7+dirty",
+          "date": "2026-11-06"
+        },
+        "MapML-OpenLayers": {
+          "passed": 14,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@b0822dd",
+          "date": "2026-11-06"
+        },
+        "MapML-MapLibre": {
+          "passed": 6,
+          "failed": 1,
+          "flaky": 0,
+          "skipped": 7,
+          "build": "cross-port-tests@4598218+dirty",
+          "date": "2026-11-06"
+        }
+      },
+      "notes": "Upstream ran in one headed persistent context (slowMo 350), slept after loading and moving, and judged the tile grid and each layer's bounds rectangle by Leaflet's DOM (three tests were quarantined for it). Now each test loads its own page (D4); upstream's scenario runs in CBMTILE (@CBMTILE, upstream's fixture) and again in OSMTILE (D3) on a new counterpart, debugModeOSMTILE.html, whose inline/large/beyond-range layers are laid out like upstream's. The coordinate panel is read through the contract (CONTRACT.md, new 'Debug mode' section, and toggleDebug added to the public API). What the overlay draws is judged by pixels (D5) in the upper middle of the map, clear of the controls and the panel: debug mode on changes them, unchecking each layer changes them and checking it again restores them exactly, and the layer-control path is tested too. The tests that uncheck layers abort tile requests, because two layers drawing the same semi-transparent tile differ from one, so tile pixels would otherwise change too. Accurate debug coordinates: tile, tilematrix, map and tcrs are upstream's values (OSMTILE's measured on MapML.js); pcrs and gcrs were compared to MapML.js's figures to the centimetre, but Leaflet rounds its pixel origin to a whole pixel, so they are now checked against where the viewer's own extent puts the pointer's pixel (pcrs) and the map centre to within a pixel (gcrs). The OSMTILE fixture's centre is placed less than half a pixel past a whole tcrs pixel, so Leaflet's rounding and OpenLayers' exact centre give the same integer rows. Added: debug mode toggled on and off from the map's context menu (moved in from MapML-OpenLayers test/debug-mode.test.js, now deleted). MapML-MapLibre fixes: it removed the author's inline style width/height when the width/height attributes were absent (every <mapml-viewer style='width:500px;height:500px'> drew at 300x150); its panel rows were in a different order from MapML.js's; its debug boxes didn't update when a layer was checked or unchecked (mapml:layerschanged skips checked; now also a MutationObserver on checked/disabled, as its crosshair does); and a layer's disabled tally skipped hidden extents, which MapML.js counts, so a layer whose only extent is hidden never went disabled. Left failing on MapML-MapLibre (by decision): Accurate debug coordinates (OSMTILE). MapML-MapLibre draws zoom N at OSMTILE zoom N+1's scale (MapLibre zooms are for 512px tiles), so its tile/tilematrix/tcrs rows are one zoom level off; pcrs, gcrs and map agree. This is a systemic MapML-MapLibre divergence, not a debug-panel bug."
     },
     "core/drag-leaflet.test.js": {
       "status": "not-started"
@@ -884,7 +911,8 @@
         "status": "pending"
       },
       "test/debug-mode.test.js": {
-        "status": "pending"
+        "status": "deleted",
+        "supersededBy": "core/debugMode.test.js"
       },
       "test/disabled-cascade.test.js": {
         "status": "pending"

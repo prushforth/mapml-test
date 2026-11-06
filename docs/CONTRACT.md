@@ -89,15 +89,32 @@ feature-index overlay's `<output>`, which shares it
 when a move leaves the layers' bounds the map goes back, and the live region
 gives the bound message first and then, once the map is back, `zoom level N`.
 
+## Debug mode: `.mapml-debug`
+
+`viewer.toggleDebug()` (or the map menu's `toggle-debug` item) turns debug
+mode on and off. While it is on, a viewer bigger than 400×300 CSS px shows a
+coordinate panel in its shadow root: `<table class="mapml-debug">` with a
+`<caption class="mapml-debug-banner">` reading `Debug mode` (styled
+uppercase, so its `innerText` is `DEBUG MODE`) and a
+`<tbody class="mapml-debug-panel">` of six `<tr class="mapml-debug-coordinates">`,
+in MapML.js's order: tile (`i`, `j`), tilematrix (`column`, `row`), map
+(`i`, `j`), tcrs (`x`, `y`), pcrs (`easting`, `northing`, two decimals) and
+gcrs (`lon`, `lat`, six decimals), each `<th>` plus `<td>`s, filled in for
+the pointer's position as it moves over the map. The panel is removed when
+debug mode is turned off. What else debug mode draws (a tile grid, each
+checked layer's bounds, their union, the projection centre) belongs to the
+renderer, so specs judge it by pixels.
+
 ## Public API that specs may use
 
 The elements' documented API: attributes and properties (`lat`, `lon`,
 `zoom`, `projection`, `controls`, `controlsList`, `width`, `height`,
 `extent`, `layers`, `label`, `checked`, `hidden`, `opacity`, ...), methods
-(`zoomTo`, `back`, `forward`, `reload`, `defineCustomProjection`,
-`matchMedia`, `whenReady`, `mapml2geojson`, ...) and events (`map-moveend`,
-`zoomend`, `map-change`, `loadedmetadata`, ...). `zoomend` is dispatched on
-the viewer after the map's zoom has changed, with `zoom` (and so
-`matchMedia('(map-zoom: …)')`) already reflecting the new zoom.
+(`zoomTo`, `back`, `forward`, `reload`, `toggleDebug`,
+`defineCustomProjection`, `matchMedia`, `whenReady`, `mapml2geojson`, ...)
+and events (`map-moveend`, `zoomend`, `map-change`, `loadedmetadata`, ...).
+`zoomend` is dispatched on the viewer after the map's zoom has changed, with
+`zoom` (and so `matchMedia('(map-zoom: …)')`) already reflecting the new
+zoom.
 
 Anything else a spec relies on must be added to this document first.

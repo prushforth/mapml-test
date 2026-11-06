@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Debug mode tests (OSMTILE)</title>
+  <meta charset="UTF-8">
+  <script type="module" src="mapml.js"></script>
+  <style>
+    html {
+      height: 100%
+    }
+
+    body {
+      height: inherit
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    map-layer {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <mapml-viewer data-testid="viewer" style="width: 500px;height: 500px;" projection="OSMTILE" zoom="2" lat="47.1" lon="-92" controls>
+    <map-layer data-testid="osm-inline-layer" label="OSM - INLINE" checked>
+      <map-extent units="OSMTILE" checked hidden>
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="3" ></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="2" max="3" ></map-input>
+        <map-link rel='tile' tref='/data/osmtile/{zoomLevel}/{col}/{row}.png' ></map-link>
+      </map-extent>
+    </map-layer>
+    <map-layer data-testid="osm-large-layer" label="OSM - Large Extent" checked>
+      <map-extent units="OSMTILE" checked hidden>
+        <map-input name="zoomLevel" type="zoom" value="3" min="0" max="3" ></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="0" max="4" ></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="0" max="1" ></map-input>
+        <map-link rel='tile' tref='/data/osmtile/{zoomLevel}/{col}/{row}.png' ></map-link>
+      </map-extent>
+    </map-layer>
+    <map-layer data-testid="osm-beyond-layer" label="OSM - Beyond Range Extent" checked>
+      <map-extent units="OSMTILE" checked hidden>
+        <map-input name="zoomLevel" type="zoom" value="2" min="0" max="3" ></map-input>
+        <map-input name="row" type="location" axis="row" units="tilematrix" min="-2" max="6" ></map-input>
+        <map-input name="col" type="location" axis="column" units="tilematrix" min="-4" max="7" ></map-input>
+        <map-link rel='tile' tref='/data/osmtile/{zoomLevel}/{col}/{row}.png' ></map-link>
+      </map-extent>
+    </map-layer>
+  </mapml-viewer>
+</body>
+
+</html>
