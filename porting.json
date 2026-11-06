@@ -416,7 +416,34 @@
       }
     },
     "core/ArrowKeyNavContextMenu.test.js": {
-      "status": "not-started"
+      "status": "converted",
+      "notes": "Upstream ran in one headed persistent context (slowMo 250) with each test building on the last, reached the layer control and its rows by a fixed number of Tab presses (MapML.js's control tab order; MapML-OpenLayers and MapML-MapLibre have no reload stop and add scale/attribution stops), read the focused item's innerHTML (MapML.js's label markup) and read menus' hidden through viewer._map.contextMenu. Now each test loads its own page (D4), in CBMTILE on upstream's fixture and again in OSMTILE on a new counterpart, ArrowKeyNavContextMenuOSMTILE.html (D3); items are identified by contract data-id and menus by contract class, closed menus by visibility; layer and extent rows are found in the layer control by role and name (the extent as the checkbox in a group nested in its layer's, since unlabelled extents are named differently), and the menu is opened with Shift+F10 on the focused row's checkbox, which is what upstream's Tab presses led up to. Waits are on map-moveend, not sleeps. Added: initial focus on keyboard open, Escape returning focus to the extent, Tab/Shift+Tab in the layer menu, ArrowDown wrap in the extent menu; moved in from the port tests: ArrowUp wrap from the first enabled map item and within the copy submenu (MapML-MapLibre) and that menu navigation doesn't pan the map (MapML-OpenLayers). Fixes: MapML-OpenLayers opened the map menu, not the row's layer/extent menu, on Shift+F10 in the layer control, ignored arrow keys in a mouse-opened map menu, and (like MapML-MapLibre) didn't collapse the layer control on a map click as Leaflet's Control.Layers does, so it stayed open after a click dismissed a layer/extent menu.",
+      "results": {
+        "MapML.js": {
+          "passed": 10,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@82ee6e4+dirty",
+          "date": "2026-11-06"
+        },
+        "MapML-OpenLayers": {
+          "passed": 10,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 0,
+          "build": "cross-port-tests@139804a+dirty",
+          "date": "2026-11-06"
+        },
+        "MapML-MapLibre": {
+          "passed": 5,
+          "failed": 0,
+          "flaky": 0,
+          "skipped": 5,
+          "build": "cross-port-tests@51a3d18+dirty",
+          "date": "2026-11-06"
+        }
+      }
     },
     "core/axisInferring.test.js": {
       "status": "not-started"
@@ -820,7 +847,8 @@
         "status": "pending"
       },
       "test/context-menu.test.js": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "'arrow keys navigate the open menu without panning the map' was deleted: superseded by core/ArrowKeyNavContextMenu.test.js, which took over its no-pan check. The rest belongs to core/mapContextMenu*.test.js."
       },
       "test/custom-projection-disable.test.js": {
         "status": "pending"
@@ -878,7 +906,8 @@
         "status": "pending"
       },
       "test/layer-context-menu.test.js": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "'ArrowDown moves focus from Zoom to Copy' opens the layer menu with the mouse and expects focus on its first item; MapML.js focuses only on keyboard open (ContextMenu _show), so leave it for core/layerContextMenu*.test.js to settle (D9)."
       },
       "test/layer-control.test.js": {
         "status": "pending"
@@ -1037,7 +1066,8 @@
         "status": "pending"
       },
       "tests/context-menu.spec.ts": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "Its 'ContextMenu — arrow-key navigation' describe was deleted: superseded by core/ArrowKeyNavContextMenu.test.js, which took over its ArrowUp-wrap checks. The rest belongs to core/mapContextMenu*.test.js."
       },
       "tests/controls-list.spec.ts": {
         "status": "deleted",
@@ -1077,7 +1107,8 @@
         "status": "pending"
       },
       "tests/layer-context-menu.spec.ts": {
-        "status": "pending"
+        "status": "pending",
+        "notes": "Its 'layer / extent menu — arrow-key navigation' describe is covered by core/ArrowKeyNavContextMenu.test.js except that it opens the menus with the mouse and expects focus on the first item; MapML.js focuses only on keyboard open, so leave it for core/layerContextMenu*.test.js to settle (D9)."
       },
       "tests/layer-reorder.spec.ts": {
         "status": "pending"

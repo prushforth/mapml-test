@@ -6,7 +6,7 @@
 How to use this: [docs/PLAN.md](docs/PLAN.md). Upstream baseline:
 MapML.js `c50003d3` (Update playwright (#1068)).
 
-Specs: 13 converted, 0 in progress, 120 not started, of 133.
+Specs: 14 converted, 0 in progress, 119 not started, of 133.
 
 Results are from the latest unfiltered run of each file: ✓ passed,
 ✗ failed, ~ flaky, ⊘ skipped (unsupported capability or quarantined).
@@ -28,7 +28,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | api/matchMedia/prefers-color-scheme.test.js | converted | 3✓ | 3✓ | 3✓ | Upstream shared one page from a persistent context across the file (and opened a second, unused page). Now each test emulates its colour scheme on its own page before loading the fixture (D4), and the #preferred-color text assertion retries. Besides upstream assertions each scheme test checks that the (prefers-color-scheme: light) and (prefers-color-scheme: dark) matchers agree. One test moved in from the prefers-color-scheme describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts (removed): a matcher fires change when the emulated colour scheme flips. Fixture unchanged. Passed on all three as converted. |
 | api/matchMedia/prefers-lang.test.js | converted | 2✓ | 2✓ | 2✓ | Upstream launched a new browser by hand for each locale (and never closed it), outside the config, so the page did not inherit its context. Now each locale is a describe that sets it through test.use, and each test loads its own page (D4). Besides upstream's assertion that the other language's layer is hidden, each test checks that layer is unchecked, that the preferred layer stays shown and checked, and (moved in from the prefers-lang describes of MapML-OpenLayers test/match-media.test.js and MapML-MapLibre tests/match-media.spec.ts, both now removed) that the (prefers-lang: en) and (prefers-lang: fr) matchers agree with the locale. Fixture unchanged: it is CBMTILE, but the test checks DOM state set by the fixture script, not rendering, so it is not tagged and runs on MapML-MapLibre too. Passed on all three as converted. |
 | core/announceMovement.test.js | converted | 12✓ | 12✓ | 6✓ 6⊘ | Upstream CBMTILE scenario runs unchanged on upstream fixtures (@CBMTILE), and again in OSMTILE on new counterparts announceMovementMapmlViewer.html / announceMovementWebMap.html (layer min zoom 2, sized so the moves hold for keyboard pan steps of 80-128px), each for <mapml-viewer> and <map is="web-map">. The second test used to start where the first left off; it now replays those moves (D4). The live region is found by class (CONTRACT.md, new section), and every announcement is recorded by a MutationObserver, so key presses are followed until an announcement ending "zoom level N" instead of fixed sleeps, and transient bound messages are checked deterministically. Added: the region is role=status aria-live=polite aria-atomic=true, Tab lands on zoom-in-button before Enter, and a bounced pan restores lon (moved in from both port tests, now deleted). Fixed MapML-OpenLayers: keyboard pan/zoom was dead on <map is=web-map> (OL only accepts keys targeted at its target shadow host, the inner div; web-map now forwards the <map>s keydowns). Fixed MapML-MapLibre: after bouncing back into bounds it never re-announced "zoom level N" (upstream asserts it; MapML.js announces the last moveend of a traversal). |
-| core/ArrowKeyNavContextMenu.test.js | not-started |  |  |  |  |
+| core/ArrowKeyNavContextMenu.test.js | converted | 10✓ | 10✓ | 5✓ 5⊘ | Upstream ran in one headed persistent context (slowMo 250) with each test building on the last, reached the layer control and its rows by a fixed number of Tab presses (MapML.js's control tab order; MapML-OpenLayers and MapML-MapLibre have no reload stop and add scale/attribution stops), read the focused item's innerHTML (MapML.js's label markup) and read menus' hidden through viewer._map.contextMenu. Now each test loads its own page (D4), in CBMTILE on upstream's fixture and again in OSMTILE on a new counterpart, ArrowKeyNavContextMenuOSMTILE.html (D3); items are identified by contract data-id and menus by contract class, closed menus by visibility; layer and extent rows are found in the layer control by role and name (the extent as the checkbox in a group nested in its layer's, since unlabelled extents are named differently), and the menu is opened with Shift+F10 on the focused row's checkbox, which is what upstream's Tab presses led up to. Waits are on map-moveend, not sleeps. Added: initial focus on keyboard open, Escape returning focus to the extent, Tab/Shift+Tab in the layer menu, ArrowDown wrap in the extent menu; moved in from the port tests: ArrowUp wrap from the first enabled map item and within the copy submenu (MapML-MapLibre) and that menu navigation doesn't pan the map (MapML-OpenLayers). Fixes: MapML-OpenLayers opened the map menu, not the row's layer/extent menu, on Shift+F10 in the layer control, ignored arrow keys in a mouse-opened map menu, and (like MapML-MapLibre) didn't collapse the layer control on a map click as Leaflet's Control.Layers does, so it stayed open after a click dismissed a layer/extent menu. |
 | core/axisInferring.test.js | not-started |  |  |  |  |
 | core/debugMode.test.js | not-started |  |  |  |  |
 | core/drag-leaflet.test.js | not-started |  |  |  |  |
@@ -159,7 +159,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | test/announce-movement.test.js | deleted | core/announceMovement.test.js Deleted with its fixture test/fixtures/announce-movement.html. Its live-region ARIA check and bounce-restores-centre check moved into the spec. |
 | test/attribution.test.js | pending |  |
 | test/context-menu-copy.test.js | pending |  |
-| test/context-menu.test.js | pending |  |
+| test/context-menu.test.js | pending | 'arrow keys navigate the open menu without panning the map' was deleted: superseded by core/ArrowKeyNavContextMenu.test.js, which took over its no-pan check. The rest belongs to core/mapContextMenu*.test.js. |
 | test/custom-projection-disable.test.js | pending |  |
 | test/custom-projection.test.js | pending |  |
 | test/debug-mode.test.js | pending |  |
@@ -178,7 +178,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | test/history.test.js | pending |  |
 | test/i18n.test.js | pending |  |
 | test/keyboard.test.js | pending |  |
-| test/layer-context-menu.test.js | pending |  |
+| test/layer-context-menu.test.js | pending | 'ArrowDown moves focus from Zoom to Copy' opens the layer menu with the mouse and expects focus on its first item; MapML.js focuses only on keyboard open (ContextMenu _show), so leave it for core/layerContextMenu*.test.js to settle (D9). |
 | test/layer-control.test.js | pending |  |
 | test/layer-loadedmetadata.test.js | pending |  |
 | test/layer-opacity.test.js | pending |  |
@@ -236,7 +236,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 |---|---|---|
 | tests/announce-movement.spec.ts | deleted | core/announceMovement.test.js Its live-region ARIA check moved into the spec. Not moved: the repeated-Minus-at-min-zoom test, which accepted either of two outcomes, and the out-of-bounds zoom via renderer.map.jumpTo (private; the spec reaches it by keyboard). It also expected the bound message to remain after a bounce, contrary to upstream; MapML-MapLibre was fixed. demo/announce-movement.html stays as a demo. |
 | tests/attribution.spec.ts | pending |  |
-| tests/context-menu.spec.ts | pending |  |
+| tests/context-menu.spec.ts | pending | Its 'ContextMenu — arrow-key navigation' describe was deleted: superseded by core/ArrowKeyNavContextMenu.test.js, which took over its ArrowUp-wrap checks. The rest belongs to core/mapContextMenu*.test.js. |
 | tests/controls-list.spec.ts | deleted | api/domApi-mapml-viewer.test.js |
 | tests/crosshair.spec.ts | pending |  |
 | tests/disabled-layers.spec.ts | pending |  |
@@ -249,7 +249,7 @@ Results are from the latest unfiltered run of each file: ✓ passed,
 | tests/i18n.spec.ts | pending |  |
 | tests/in-shadow-root.spec.ts | pending |  |
 | tests/inline-alternate.spec.ts | pending |  |
-| tests/layer-context-menu.spec.ts | pending |  |
+| tests/layer-context-menu.spec.ts | pending | Its 'layer / extent menu — arrow-key navigation' describe is covered by core/ArrowKeyNavContextMenu.test.js except that it opens the menus with the mouse and expects focus on the first item; MapML.js focuses only on keyboard open, so leave it for core/layerContextMenu*.test.js to settle (D9). |
 | tests/layer-reorder.spec.ts | pending |  |
 | tests/legend-link.spec.ts | pending |  |
 | tests/link-features-tiles.spec.ts | pending |  |
