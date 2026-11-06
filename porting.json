@@ -18,7 +18,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -26,7 +26,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -34,7 +34,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -53,7 +53,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -61,7 +61,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -69,7 +69,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -89,7 +89,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -97,7 +97,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -105,7 +105,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 18,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       }
@@ -118,7 +118,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -126,7 +126,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -134,7 +134,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 6,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -148,7 +148,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -156,7 +156,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -164,7 +164,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 3,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -178,7 +178,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -186,7 +186,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -194,7 +194,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 4,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -213,7 +213,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -221,7 +221,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -229,7 +229,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 2,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -243,7 +243,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -251,7 +251,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -259,7 +259,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -273,7 +273,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -281,7 +281,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -289,7 +289,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 1,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -303,7 +303,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -311,7 +311,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -319,7 +319,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -333,7 +333,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -341,7 +341,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -349,7 +349,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -363,7 +363,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -371,7 +371,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -379,7 +379,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -387,14 +387,14 @@
     },
     "core/announceMovement.test.js": {
       "status": "converted",
-      "notes": "Upstream CBMTILE scenario runs unchanged on upstream fixtures (@CBMTILE), and again in OSMTILE on new counterparts announceMovementMapmlViewer.html / announceMovementWebMap.html (layer min zoom 2, sized so the moves hold for keyboard pan steps of 80-128px), each for <mapml-viewer> and <map is=\"web-map\">. The second test used to start where the first left off; it now replays those moves (D4). The live region is found by class (CONTRACT.md, new section), and every announcement is recorded by a MutationObserver, so key presses are followed until an announcement ending \"zoom level N\" instead of fixed sleeps, and transient bound messages are checked deterministically. Added: the region is role=status aria-live=polite aria-atomic=true, Tab lands on zoom-in-button before Enter, and a bounced pan restores lon (moved in from both port tests, now deleted). Fixed MapML-OpenLayers: keyboard pan/zoom was dead on <map is=web-map> (OL only accepts keys targeted at its target shadow host, the inner div; web-map now forwards the <map>s keydowns). Fixed MapML-MapLibre: after bouncing back into bounds it never re-announced \"zoom level N\" (upstream asserts it; MapML.js announces the last moveend of a traversal).",
+      "notes": "Upstream CBMTILE scenario runs unchanged on upstream fixtures (@CBMTILE), and again in OSMTILE on new counterparts announceMovementMapmlViewer.html / announceMovementWebMap.html (layer min zoom 2, sized so the moves hold for keyboard pan steps of 80-128px), each for <mapml-viewer> and <map is=\"web-map\">. The second test used to start where the first left off; it now replays those moves (D4). The live region is found by class (CONTRACT.md, new section), and every announcement is recorded by a MutationObserver, so key presses are followed until an announcement ending \"zoom level N\" instead of fixed sleeps, and transient bound messages are checked deterministically. Added: the region is role=status aria-live=polite aria-atomic=true, Tab lands on zoom-in-button before Enter, and a bounced pan restores lon (moved in from both port tests, now deleted). Fixed MapML-OpenLayers: keyboard pan/zoom was dead on <map is=web-map> (OL only accepts keys targeted at its target shadow host, the inner div; web-map now forwards the <map>s keydowns). Fixed MapML-MapLibre: after bouncing back into bounds it never re-announced \"zoom level N\" (upstream asserts it; MapML.js announces the last moveend of a traversal). Failing on MapML-MapLibre since its cross-port: core/debugMode fix (by decision): 'Output values are correct at bounds and bounces back' (OSMTILE, both viewers). MapML-MapLibre used to remove the fixture's inline style size and ran these tests at 300x150, which passed by accident. At the real 600x600 the MapML-MapLibre zoom-scale divergence shows (zoom N is drawn at OSMTILE N+1's scale, see core/debugMode): the view and each pan cover half the ground, the map stops at the antimeridian before the view leaves the layer, and there is no west-bound announcement or bounce.",
       "results": {
         "MapML.js": {
           "passed": 12,
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -402,15 +402,15 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
-          "passed": 6,
-          "failed": 0,
+          "passed": 4,
+          "failed": 2,
           "flaky": 0,
           "skipped": 6,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       }
@@ -424,7 +424,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -432,7 +432,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -440,7 +440,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 5,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       }
@@ -453,7 +453,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@f85fdad",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -461,7 +461,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@151757c+dirty",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -469,7 +469,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 4,
-          "build": "cross-port-tests@c782d7b",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
@@ -483,7 +483,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@197e7d7+dirty",
+          "build": "cross-port-tests@045e700",
           "date": "2026-11-06"
         },
         "MapML-OpenLayers": {
@@ -491,7 +491,7 @@
           "failed": 0,
           "flaky": 0,
           "skipped": 0,
-          "build": "cross-port-tests@b0822dd",
+          "build": "cross-port-tests@416903f",
           "date": "2026-11-06"
         },
         "MapML-MapLibre": {
@@ -499,7 +499,7 @@
           "failed": 1,
           "flaky": 0,
           "skipped": 7,
-          "build": "cross-port-tests@4598218+dirty",
+          "build": "cross-port-tests@8e040be",
           "date": "2026-11-06"
         }
       },
